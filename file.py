@@ -114,26 +114,31 @@ class File(ProofHubObject):
     def getFilePath(self) -> str:
         return f"{self.root_file_path}/{self.file_name}"
     
-    def downloadFile(self):
-        filename = self.getFilePath()
+    def getFileUrl(self):
+        urlfull = None
         
-        if "url" not in self.json_data:
-            print("file")
-            print(self.json_data)
+        if not "url" in self.json_data:
             return
+        if not "file_type" in self.json_data:
+            return
+        
         urlbase = self.json_data["url"]
         
         if "full_image" in urlbase:
             urlfull = urlbase["full_image"]
-       # elif "download" in urlbase:
-       #     urlfull = urlbase["download"]
         
-        if not urlfull:
+        if self.json_data["file_type"] == "odt":
+            urlfull = None
+            return
+    
+    def downloadFile(self):
+        filename = self.getFilePath()
+        urlfull = self.getFileUrl()
+        
+        if urlfull == None:
             print("file")
             print(self.json_data)
             return
-        
-        #Files: falls nicht full_image gegeben, über download versuchen?
         
         self.proofhubApi.get_file(urlfull, self.root_file_path, filename)
 

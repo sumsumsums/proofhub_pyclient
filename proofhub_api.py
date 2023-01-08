@@ -2,46 +2,44 @@ import requests
 import time
 import sys
 from pathlib import Path
+from config import Config
 
 class ProofhubApi(object):
     
     urlbase = ''
-    headers = { }
+    headers_json = { }
     outputdir = ''
     api_key = None
     user_agent = None
 
-    def __init__(self, urlbase, api_key, user_agent, outputdir=""):
-        self.urlbase = urlbase
-        self.api_key = api_key
-        self.user_agent = user_agent
-        self.headers =  {
-            'X-API-KEY': self.api_key,
-            'User-Agent': self.user_agent, 
-            'Content-Type': 'application/json'
-        }
+    def __init__(self, config: Config):
+        self.urlbase = config.urlbase
+        self.api_key = config.api_key
+        self.user_agent = config.user_agent
+        self.outputdir = config.outputdir
         
-        self.outputdir = outputdir
+        self.headers_json = config.headers
+        self.headers_json['Content-Type'] =  'application/json'
+        
 
     def send_request(self, url) -> requests.Response:
         print(url)
-        api_response = requests.get(url, headers=self.headers)
+        api_response = requests.get(url, headers=self.headers_json)
         return api_response
     
-    def send_request_check(self, url) -> requests.Response:
+    def send_request_check(self, url, file_request=False) -> requests.Response:
         
         send_request = True
         
         while send_request == True:
             api_response = self.send_request(url)
             
-            json_response = api_response.json()
-            if json_response:
-                response_error = f"Error during ProofHub request - Response code: {api_response.status_code} ### Response text: {json_response}"
-            else:
-                response_error = f"Error during ProofHub request - Response code: {api_response.status_code}"
+            response_error = f"Error during ProofHub request - Response code: {api_response.status_code}"
         
             if api_response.status_code == 200:
+                send_request = False
+                return api_response
+            elif file_request == True and api_response.status_code == 400:
                 send_request = False
                 return api_response
             elif api_response.status_code == 429:
@@ -76,9 +74,12 @@ class ProofhubApi(object):
         if forced_download == False and self.check_file_exists(filename):
             return
         
-        api_response = self.send_request_check(full_url)
+        api_response = self.send_request_check(full_url, file_request=True)
         if not api_response:
             sys.exit(1)
+        elif api_response.status_code == 400:
+            # not supported file type, continue
+            return
         elif api_response.status_code == 200:
             directory = Path(dirname)
             directory.mkdir(exist_ok=True, parents=True)

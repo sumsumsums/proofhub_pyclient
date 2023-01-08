@@ -19,15 +19,22 @@ class Role(ProofHubObject):
 #
 class Roles(ProofHubObject):
     
-    items = []
+    roles = []
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=""):
         super().__init__(json_data, proofhubApi)
         
     def parseJsonResponse(self):
-        for jsonitem in self.json_data:
+        if self.roles:
+            self.roles.clear()
+        else:
+            self.roles = []
+        
+        records = self.getResponseAsArray()
+        
+        for jsonitem in records:
             objitem = Role(self.proofhubApi, jsonitem)
-            self.items.append(objitem)
+            self.roles.append(objitem)
 
     def getRoles(self, save=True):
         self.json_data = self.proofhubApi.get_data_string('roles')

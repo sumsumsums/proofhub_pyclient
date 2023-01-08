@@ -19,15 +19,22 @@ class Group(ProofHubObject):
 #
 class Groups(ProofHubObject):
     
-    items = []
+    groups = []
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=""):
         super().__init__(json_data, proofhubApi)
         
     def parseJsonResponses(self):
-        for jsonitem in self.json_data:
+        if self.groups:
+            self.groups.clear()
+        else:
+            self.groups = []
+            
+        records = self.getResponseAsArray()
+        
+        for jsonitem in records:
             objitem = Group(self.proofhubApi, jsonitem)
-            self.items.append(objitem)
+            self.groups.append(objitem)
             
     def getGroups(self, save=True):
         self.json_data = self.proofhubApi.get_data_string('groups')

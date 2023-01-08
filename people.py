@@ -20,15 +20,22 @@ class People(ProofHubObject):
 #
 class Peoples(ProofHubObject):
     
-    items = []
+    people = []
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=""):
         super().__init__(json_data, proofhubApi)
         
     def parseJsonResponse(self):
-        for jsonitem in self.json_data:
+        if self.people:
+            self.people.clear()
+        else:
+            self.people = []
+        
+        records = self.getResponseAsArray()
+        
+        for jsonitem in records:
             objitem = People(self.proofhubApi, jsonitem)
-            self.items.append(objitem)
+            self.people.append(objitem)
 
     def getPeoples(self, save=True):
         self.json_data = self.proofhubApi.get_data_string('people')

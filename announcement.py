@@ -25,8 +25,11 @@ class Announcement(ProofHubObject):
     # comments
     # GET v3/announcements/3628560/comments
     def getComments(self):
-        comments_count = self.json_data["comments"]["count"]
-        if comments_count == 0:
+        if not self.json_data or not self.json_data["comments"]:
+            return
+        comments_in = self.json_data["comments"]
+        
+        if not comments_in["count"] or comments_in["count"] == 0:
             return
         
         url = f"announcements/{self.announcement_id}/comments"
@@ -41,7 +44,7 @@ class Announcement(ProofHubObject):
 #
 class Announcements(ProofHubObject):
     
-    items = []
+    announcements = []
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=""):
         super().__init__(json_data, proofhubApi)
@@ -49,12 +52,17 @@ class Announcements(ProofHubObject):
     def parseJsonResponse(self):
         dir = self.getFilePath()
         
+        if self.announcements:
+            self.announcements.clear()
+        else:
+            self.announcements = []
+        
         if isinstance(self.json_data, dict):
             records = self.json_data["announcements"]
         
             for jsonitem in records:
                 objitem = Announcement(self.proofhubApi, dir, jsonitem)
-                self.items.append(objitem)
+                self.announcements.append(objitem)
 
     def getAnnouncements(self, save=True):
         self.json_data = self.proofhubApi.get_data_string('announcements')
@@ -68,5 +76,5 @@ class Announcements(ProofHubObject):
     def saveJson(self):
         self.saveJsonFileNotEmpty("announcements.json")
         
-        for item in self.items:
-            item.getComments()
+        for announcement in self.announcements:
+            announcement.getComments()

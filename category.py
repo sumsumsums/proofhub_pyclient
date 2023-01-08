@@ -20,15 +20,22 @@ class Category(ProofHubObject):
 #
 class Categories(ProofHubObject):
     
-    items = []
+    categories = []
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=""):
         super().__init__(json_data, proofhubApi)
         
     def parseJsonResponse(self):
-        for jsonitem in self.json_data:
+        if self.categories:
+            self.categories.clear()
+        else:
+            self.categories = []
+        
+        records = self.getResponseAsArray()
+        
+        for jsonitem in records:
             objitem = Category(self.proofhubApi, jsonitem)
-            self.items.append(objitem)
+            self.categories.append(objitem)
 
     def getCategories(self, save=True):
         self.json_data = self.proofhubApi.get_data_string('categories')
