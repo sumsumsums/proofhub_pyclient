@@ -1,5 +1,5 @@
 from proofhub_api import ProofhubApi
-from proofhubobject import ProofHubObject
+from baseobject import ProofHubObject
 
 # topics and topic comments
 #
@@ -28,6 +28,10 @@ class Topic(ProofHubObject):
         return f"{self.root_file_path}/{self.topic_id}"
     
     def getTopicComments(self):
+        comments_count = self.json_data["comments"]["count"]
+        if comments_count == 0:
+            return
+
         comments = TopicComments(self.proofhubApi, self.project_id, self.topic_id, self.getFilePath())
         comments.getTopicComments()
 

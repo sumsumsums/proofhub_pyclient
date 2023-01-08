@@ -23,57 +23,69 @@ class ProofhubApi(object):
         print(url)
         api_response = requests.get(url, headers=self.headers)
         return api_response
-
-    def get_data_string(self, prefix):
-        url = self.urlbase + prefix
+    
+    def send_request_check(self, url) -> requests.Response:
+        
         send_request = True
         
         while send_request == True:
             api_response = self.send_request(url)
-            send_request = False
+            
             json_response = api_response.json()
-            
-            response_error = f"Error during ProofHub request - Response code: {api_response.status_code} ### Response text: {json_response}"
-            
+            if json_response:
+                response_error = f"Error during ProofHub request - Response code: {api_response.status_code} ### Response text: {json_response}"
+            else:
+                response_error = f"Error during ProofHub request - Response code: {api_response.status_code}"
+        
             if api_response.status_code == 200:
-                return json_response
-            elif json_response:
-                if isinstance(json_response, dict):
-                    error = json_response['error']
-                    if not error:
-                        sys.exit(response_error)
-                    elif 'Rate limit exceeded' in error:
-                        # sleep 11 seconds
-                        send_request = True
-                        time.sleep(11)
-                    else:
-                        sys.exit(response_error)
-                else:
-                    sys.exit(response_error)
+                send_request = False
+                return api_response
+            elif api_response.status_code == 429:
+                # Rate Limits
+                # API calls are subject to rate limiting. Exceeding any rate limits will result in requests returning a status code of 429 (Too Many Requests). 
+                # Rate limits are 25 requests per 10 second for the same account from the same IP. Check the Retry-After header to learn how many seconds to wait before retrying the request.
+                # sleep 11 seconds
+                
+                sleep_time = 11
+                if api_response.headers["Retry-After"]:
+                    sleep_time_header = api_response.headers.get("Retry-After")
+                    if type(sleep_time_header) == int and sleep_time_header > 0:
+                        sleep_time = sleep_time_header
+
+                send_request = True
+                time.sleep(sleep_time)
+            else:
+                sys.exit(response_error)
+        
+
+    def get_data_string(self, prefix):
+        url = self.urlbase + prefix
+        
+        api_response = self.send_request_check(url)
+        if not api_response:
+            sys.exit(1)
+        else:
+            return api_response.json()
         
     def get_file(self, full_url, dirname, filename, forced_download=False):
-        if forced_download == False:
-            fileos = Path(filename)
-            if fileos.is_file() == True:
-                return
+        # check file already exists
+        if forced_download == False and self.check_file_exists(filename):
+            return
         
-        totalbits = 0
-        url = full_url
-        
-        headers_file = self.headers
-        headers_file['stream'] = 'True'
-        
-        api_response = requests.get(url, headers=headers_file)
-        
-        if api_response.status_code == 200:
+        api_response = self.send_request_check(full_url)
+        if not api_response:
+            sys.exit(1)
+        elif api_response.status_code == 200:
             directory = Path(dirname)
             directory.mkdir(exist_ok=True, parents=True)
             
             with open(filename, 'wb') as f:
-                for chunk in api_response.iter_content(chunk_size=1024):
-                    if chunk:
-                        totalbits += 1024
-                        print("Downloaded",totalbits*1025,"KB...")
-                        f.write(chunk)
+                f.write(api_response.content)
+        else:
+            sys.exit(1)
+    
+    def check_file_exists(self, filename):
+        fileos = Path(filename)
+        return fileos.is_file()
 
                     

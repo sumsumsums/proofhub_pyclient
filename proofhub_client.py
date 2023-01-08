@@ -20,12 +20,7 @@ useragent='ProofClient (proofhub-client@fmey.org)'
 rootdirectory="C:/Users/frank/99_tmp/proofhub"
 
 # TODO
-# Folders recursive auflösen
-# Task comments GET v3/projects/23423233/todolists/13964085/tasks/13966758/comments
-
-# Fehler abfangen: {'status': False, 'error': 'Rate limit exceeded. Try after 10 seconds'}
-
-# Not: Timesheets, Time, Quickies, Request forms, Everything
+# Files: falls nicht full_image gegeben, über download versuchen?
 
 ph = ProofhubApi(urlbase=urlbase, api_key=apikey, user_agent=useragent, outputdir=rootdirectory)
 

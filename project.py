@@ -1,5 +1,5 @@
 from proofhub_api import ProofhubApi
-from proofhubobject import ProofHubObject 
+from baseobject import ProofHubObject 
 
 from task import Todolists
 from notes import Notebooks

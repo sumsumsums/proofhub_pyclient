@@ -1,5 +1,5 @@
 from proofhub_api import ProofhubApi
-from proofhubobject import ProofHubObject
+from baseobject import ProofHubObject
 
 # folders
 #
@@ -59,6 +59,17 @@ class Folders(ProofHubObject):
         for jsonitem in records:
             objitem = Folder(self.proofhubApi, dir, self.project_id, jsonitem)
             self.folders.append(objitem)
+            self.getSubFolder(dir, jsonitem)
+
+    def getSubFolder(self, dir, jsonitem):
+        if "children" not in jsonitem:
+            return
+        
+        children = jsonitem["children"]
+        for child in children:
+            objitem = Folder(self.proofhubApi, dir, self.project_id, child)
+            self.folders.append(objitem)
+            self.getSubFolder(dir, child)
 
     def getFolders(self, save_lists=True):
         url = f"projects/{self.project_id}/folders"
@@ -105,8 +116,26 @@ class File(ProofHubObject):
     
     def downloadFile(self):
         filename = self.getFilePath()
-        url = self.json_data["url"]["full_image"]
-        self.proofhubApi.get_file(url, self.root_file_path, filename)
+        
+        if "url" not in self.json_data:
+            print("file")
+            print(self.json_data)
+            return
+        urlbase = self.json_data["url"]
+        
+        if "full_image" in urlbase:
+            urlfull = urlbase["full_image"]
+       # elif "download" in urlbase:
+       #     urlfull = urlbase["download"]
+        
+        if not urlfull:
+            print("file")
+            print(self.json_data)
+            return
+        
+        #Files: falls nicht full_image gegeben, über download versuchen?
+        
+        self.proofhubApi.get_file(urlfull, self.root_file_path, filename)
 
 #
 # files collection
@@ -152,4 +181,4 @@ class Files(ProofHubObject):
             file.downloadFile()
 
     def getFilePath(self) -> str:
-        return f"{self.root_file_path}/files"
+        return f"{self.root_file_path}"
