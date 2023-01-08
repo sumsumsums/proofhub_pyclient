@@ -8,12 +8,16 @@ class ProofhubApi(object):
     urlbase = ''
     headers = { }
     outputdir = ''
+    api_key = None
+    user_agent = None
 
     def __init__(self, urlbase, api_key, user_agent, outputdir=""):
         self.urlbase = urlbase
+        self.api_key = api_key
+        self.user_agent = user_agent
         self.headers =  {
-            'X-API-KEY': api_key,
-            'User-Agent': user_agent, 
+            'X-API-KEY': self.api_key,
+            'User-Agent': self.user_agent, 
             'Content-Type': 'application/json'
         }
         
