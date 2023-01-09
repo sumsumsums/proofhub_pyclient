@@ -25,10 +25,9 @@ class Config(object):
         args = vars(self.parser.parse_args())
         configfile = args['configfile']
         
-        print(configfile)
         
         self.readConfig(configfile)
-    
+
     def readConfig(self, configfile):
         config = configparser.ConfigParser()
         config.read(configfile)
@@ -43,4 +42,4 @@ class Config(object):
             'User-Agent': self.user_agent,
         }
 
-        
+

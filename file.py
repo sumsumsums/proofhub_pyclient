@@ -42,11 +42,11 @@ class Folders(ProofHubObject):
     
     project_id = None
     folders = []
-    
+
     def __init__(self, proofhubApi: ProofhubApi, project_id, json_data=""):
         super().__init__(json_data, proofhubApi)
         self.project_id= project_id
-        
+
     def parseJsonResponse(self):
         dir = self.getFilePath()
         
@@ -101,7 +101,7 @@ class File(ProofHubObject):
     root_file_path = ""
     file_id = None
     file_name = None
-    
+
     def __init__(self, proofhubApi: ProofhubApi, file_path, json_data=""):
         super().__init__(json_data, proofhubApi)
         self.root_file_path = file_path
@@ -110,43 +110,41 @@ class File(ProofHubObject):
     def setFileId(self):
         self.file_id = self.json_data["id"]
         self.file_name = self.json_data["name"]
-    
+
     def getFilePath(self) -> str:
         return f"{self.root_file_path}/{self.file_name}"
-    
+
     def getFileUrl(self):
         urlfull = None
-        
+
         if not "url" in self.json_data:
             return
         if not "file_type" in self.json_data:
             return
-        
+
         urlbase = self.json_data["url"]
-        
+
         if "full_image" in urlbase:
             urlfull = urlbase["full_image"]
-        
+
         if self.json_data["file_type"] == "odt":
             urlfull = None
             return
-    
+
     def downloadFile(self):
         filename = self.getFilePath()
         urlfull = self.getFileUrl()
-        
+
         if urlfull == None:
-            print("file")
-            print(self.json_data)
             return
-        
+
         self.proofhubApi.get_file(urlfull, self.root_file_path, filename)
 
 #
 # files collection
 #
 class Files(ProofHubObject):
-    
+
     project_id = None
     folder_id = None
     root_file_path = ""
