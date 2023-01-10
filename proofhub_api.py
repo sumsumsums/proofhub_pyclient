@@ -11,8 +11,12 @@ class ProofhubApi(object):
     outputdir = ''
     api_key = None
     user_agent = None
+    
+    config: Config = None
 
     def __init__(self, config: Config):
+        self.config = config
+        
         self.urlbase = config.urlbase
         self.api_key = config.api_key
         self.user_agent = config.user_agent
@@ -20,10 +24,9 @@ class ProofhubApi(object):
         
         self.headers_json = config.headers
         self.headers_json['Content-Type'] =  'application/json'
-        
 
     def send_request(self, url) -> requests.Response:
-        print(url)
+        self.config.logger.info(url)
         api_response = requests.get(url, headers=self.headers_json)
         return api_response
     
@@ -41,6 +44,8 @@ class ProofhubApi(object):
                 return api_response
             elif file_request == True and api_response.status_code == 400:
                 send_request = False
+                logmsg = f"File request returned status {api_response.status_code} for url {url}"
+                self.config.logger.error(logmsg)
                 return api_response
             elif api_response.status_code == 429:
                 # Rate Limits
@@ -57,15 +62,16 @@ class ProofhubApi(object):
                 send_request = True
                 time.sleep(sleep_time)
             else:
-                sys.exit(response_error)
-        
+                send_request = False
+                logmsg = f"Request returned status {api_response.status_code} for url {url}"
+                self.config.logger.error(logmsg)
 
     def get_data_string(self, prefix):
         url = self.urlbase + prefix
         
         api_response = self.send_request_check(url)
         if not api_response:
-            sys.exit(1)
+            return []
         else:
             return api_response.json()
         
@@ -76,7 +82,7 @@ class ProofhubApi(object):
         
         api_response = self.send_request_check(full_url, file_request=True)
         if not api_response:
-            sys.exit(1)
+            return
         elif api_response.status_code == 400:
             # not supported file type, continue
             return
@@ -87,7 +93,7 @@ class ProofhubApi(object):
             with open(filename, 'wb') as f:
                 f.write(api_response.content)
         else:
-            sys.exit(1)
+            return
     
     def check_file_exists(self, filename):
         fileos = Path(filename)

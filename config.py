@@ -1,5 +1,7 @@
 import configparser
 import argparse
+import logging
+import logging.config
 
 class Config(object):
     
@@ -13,6 +15,8 @@ class Config(object):
     api_key = None
     user_agent = None
     
+    logger = None
+    
     def __init__(self):
         self.parser = None
 
@@ -23,9 +27,10 @@ class Config(object):
     def parseInput(self):
         self.buildArgumentParser()
         args = vars(self.parser.parse_args())
+        
+        self.initializeLogger(args)
+        
         configfile = args['configfile']
-        
-        
         self.readConfig(configfile)
 
     def readConfig(self, configfile):
@@ -41,5 +46,16 @@ class Config(object):
             'X-API-KEY': self.api_key,
             'User-Agent': self.user_agent,
         }
+
+    def initializeLogger(self, vars):
+        formatter = logging.Formatter('%(asctime)s - %(levelname)-8s - %(message)s')
+        
+        handler = logging.StreamHandler()
+        handler.setFormatter(formatter)
+        handler.setLevel(logging.INFO)
+
+        self.logger = logging.getLogger('proofhub_client')
+        self.logger.setLevel(logging.INFO)
+        self.logger.addHandler(handler)
 
 
