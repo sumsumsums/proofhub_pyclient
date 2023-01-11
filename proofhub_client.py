@@ -28,29 +28,35 @@ config.logger.info(today)
 
 ph = ProofhubApi(config=config)
 
-config.logger.info("Getting groups")
-groups = Groups(proofhubApi=ph)
-groups.getGroups()
+if config.get_groups:
+    config.logger.info("Getting groups")
+    groups = Groups(proofhubApi=ph)
+    groups.getGroups()
 
-config.logger.info("Getting people")
-people = Peoples(proofhubApi=ph)
-people.getPeoples()
+if config.get_people:
+    config.logger.info("Getting people")
+    people = Peoples(proofhubApi=ph)
+    people.getPeoples()
 
-config.logger.info("Getting roles")
-roles = Roles(proofhubApi=ph)
-roles.getRoles()
+if config.get_roles:
+    config.logger.info("Getting roles")
+    roles = Roles(proofhubApi=ph)
+    roles.getRoles()
 
-config.logger.info("Getting categories")
-categories = Categories(proofhubApi=ph)
-categories.getCategories()
+if config.get_category:
+    config.logger.info("Getting categories")
+    categories = Categories(proofhubApi=ph)
+    categories.getCategories()
 
-config.logger.info("Getting announcements")
-announcements = Announcements(proofhubApi=ph)
-announcements.getAnnouncements()
+if config.get_announcement:
+    config.logger.info("Getting announcements")
+    announcements = Announcements(proofhubApi=ph)
+    announcements.getAnnouncements()
 
-config.logger.info("Getting projects")
-projects = Projects(proofhubApi=ph)
-projects.getProjects()
+if config.get_projects:
+    config.logger.info("Getting projects")
+    projects = Projects(proofhubApi=ph)
+    projects.getProjects()
 
 today = f"Finished program - date: {date.today()}"
 config.logger.info(today)

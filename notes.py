@@ -108,8 +108,7 @@ class Note(ProofHubObject):
     
     #v3/projects/23423233/notebooks/41246749/notes/80731708/comments
     def getComments(self):
-        comments_count = self.json_data["comments"]
-        if comments_count == 0:
+        if not self.json_data or not self.json_data["comments"] or self.json_data["comments"] == 0:
             return
         
         url = f"projects/{self.project_id}/notebooks/{self.notebook_id}/notes/{self.note_id}/comments"

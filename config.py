@@ -6,8 +6,8 @@ import logging.config
 class Config(object):
     
     defaultSection = 'default'
-    
     parser: argparse.ArgumentDefaultsHelpFormatter = None
+    logger = None
     
     urlbase = ''
     headers = { }
@@ -15,7 +15,16 @@ class Config(object):
     api_key = None
     user_agent = None
     
-    logger = None
+    get_people = True
+    get_groups = True
+    get_category = True 
+    get_announcement = True 
+    get_roles = True 
+    get_projects = True
+    get_folders = True
+    get_topics = True 
+    get_notebooks = True
+    get_tasklists = True
     
     def __init__(self):
         self.parser = None
@@ -46,6 +55,18 @@ class Config(object):
             'X-API-KEY': self.api_key,
             'User-Agent': self.user_agent,
         }
+        
+        # objects to get
+        self.get_announcement = config.getboolean(self.default_section, 'get_announcement', fallback=True)
+        self.get_category = config.getboolean(self.default_section, 'get_category', fallback=True)
+        self.get_people = config.getboolean(self.default_section, 'get_people', fallback=True)
+        self.get_groups = config.getboolean(self.default_section, 'get_groups', fallback=True)
+        self.get_roles = config.getboolean(self.default_section, 'get_roles', fallback=True)
+        self.get_projects = config.getboolean(self.default_section, 'get_projects', fallback=True)
+        self.get_folders = config.getboolean(self.default_section, 'get_folders', fallback=True)
+        self.get_topics = config.getboolean(self.default_section, 'get_topics', fallback=True)
+        self.get_notebooks = config.getboolean(self.default_section, 'get_notebooks', fallback=True)
+        self.get_tasklists = config.getboolean(self.default_section, 'get_tasklists', fallback=True)
 
     def initializeLogger(self, vars):
         formatter = logging.Formatter('%(asctime)s - %(levelname)-8s - %(message)s')

@@ -28,8 +28,11 @@ class Topic(ProofHubObject):
         return f"{self.root_file_path}/{self.topic_id}"
     
     def getTopicComments(self):
-        comments_count = self.json_data["comments"]["count"]
-        if comments_count == 0:
+        if not self.json_data or not self.json_data ["comments"]:
+            return
+        
+        comments_json = self.json_data["comments"]
+        if not comments_json["count"] or comments_json["count"] == 0:
             return
 
         comments = TopicComments(self.proofhubApi, self.project_id, self.topic_id, self.getFilePath())
@@ -54,8 +57,10 @@ class Topics(ProofHubObject):
             self.topics.clear()
         else:
             self.topics = []
-        
-        for jsonitem in self.json_data:
+
+        records = self.getResponseAsArray()
+
+        for jsonitem in records:
             objitem = Topic(self.proofhubApi, self.project_id, dir, jsonitem)
             self.topics.append(objitem)
 
@@ -110,17 +115,22 @@ class TopicComments(ProofHubObject):
         
     def parseJsonResponse(self):
         dir = self.getFilePath( )
-    
-        comments = self.json_data["comments"]
 
         if self.topiccom:
             self.topiccom.clear()
         else:
             self.topiccom = []
             
-        for jsonitem in comments:
-            objitem = TopicComment(self.proofhubApi, self.project_id, self.topic_id, dir, jsonitem)
-            self.topiccom.append(objitem)
+        records = self.getResponseAsArray()
+            
+        for jsonitem in records:
+            if not jsonitem["comments"]:
+                continue
+            
+            comments = jsonitem["comments"]
+            for comment in comments:
+                objitem = TopicComment(self.proofhubApi, self.project_id, self.topic_id, dir, comment)
+                self.topiccom.append(objitem)
 
     def getTopicComments(self, save=True):
         url = f"/projects/{self.project_id}/topics/{self.topic_id}/comments"

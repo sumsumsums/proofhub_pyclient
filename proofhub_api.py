@@ -65,6 +65,10 @@ class ProofhubApi(object):
                 send_request = False
                 logmsg = f"Request returned status {api_response.status_code} for url {url}"
                 self.config.logger.error(logmsg)
+                self.config.logger.error(api_response.headers)
+                logmsg = f"Exit program after failed request"
+                self.config.logger.error(logmsg)
+                sys.exit(1)
 
     def get_data_string(self, prefix):
         url = self.urlbase + prefix

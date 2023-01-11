@@ -31,20 +31,24 @@ class Project(ProofHubObject):
         
     def getProjectData(self):
         # todolists / task lists
-        self.todolists = Todolists(self.proofhubApi, self.project_id)
-        self.todolists.getTodolists()
+        if self.proofhubApi.config.get_tasklists:
+            self.todolists = Todolists(self.proofhubApi, self.project_id)
+            self.todolists.getTodolists()
         
         # topics / discussions
-        self.topics = Topics(self.proofhubApi, self.project_id)
-        self.topics.getTopics()
+        if self.proofhubApi.config.get_topics:
+            self.topics = Topics(self.proofhubApi, self.project_id)
+            self.topics.getTopics()
         
         # folders and files
-        self.folders = Folders(self.proofhubApi, self.project_id)
-        self.folders.getFolders()
+        if self.proofhubApi.config.get_folders:
+            self.folders = Folders(self.proofhubApi, self.project_id)
+            self.folders.getFolders()
         
         # notebooks and notes
-        self.notebooks = Notebooks(self.proofhubApi, self.project_id)
-        self.notebooks.getNotebooks()
+        if self.proofhubApi.config.get_notebooks:
+            self.notebooks = Notebooks(self.proofhubApi, self.project_id)
+            self.notebooks.getNotebooks()
 
 #
 # projects collection
