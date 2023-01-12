@@ -5,7 +5,7 @@ import logging.config
 
 class Config(object):
     
-    defaultSection = 'default'
+    default_section = 'default'
     parser: argparse.ArgumentDefaultsHelpFormatter = None
     logger = None
     
@@ -46,10 +46,10 @@ class Config(object):
         config = configparser.ConfigParser()
         config.read(configfile)
         
-        self.api_key = config.get(self.defaultSection, 'api_key')
-        self.urlbase = config.get(self.defaultSection, 'proofhub_url')
-        self.outputdir = config.get(self.defaultSection, 'output_directory')
-        self.user_agent = config.get(self.defaultSection, 'user_agent')
+        self.api_key = config.get(self.default_section, 'api_key')
+        self.urlbase = config.get(self.default_section, 'proofhub_url')
+        self.outputdir = config.get(self.default_section, 'output_directory')
+        self.user_agent = config.get(self.default_section, 'user_agent')
 
         self.headers =  {
             'X-API-KEY': self.api_key,
