@@ -26,7 +26,7 @@ class ProofHubObject(object):
     def getResponseAsArray(self):
         records = []
         if not self.json_data:
-            return
+            return records
         
         if isinstance(self.json_data, dict):
             records.append(self.json_data)
