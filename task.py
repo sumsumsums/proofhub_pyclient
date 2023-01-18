@@ -55,17 +55,15 @@ class Todolists(ProofHubObject):
             self.todolists.clear()
         else:
             self.todolist = []
-            
-        records = self.getResponseAsArray()
         
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = Todolist(self.proofhubApi, self.project_id, dir, jsonitem)
             self.todolists.append(objitem)
 
     def getTodolists(self, save=True):
         url = f"/projects/{self.project_id}/todolists"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
@@ -118,7 +116,7 @@ class Task(ProofHubObject):
         
         url = f"projects/{self.project_id}/todolists/{self.todolist_id}/tasks/{self.task_id}/comments"
         
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         filename = f"{self.task_id}_task_comments.json"
         self.saveJsonFileNotEmpty(filename)
 
@@ -146,16 +144,14 @@ class Tasks(ProofHubObject):
         else:
             self.tasks = []
         
-        records = self.getResponseAsArray()
-        
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = Task(self.proofhubApi, self.project_id, self.todolist_id, dir, jsonitem)
             self.tasks.append(objitem)
 
     def getTasks(self, save=True):
         url = f"/projects/{self.project_id}/todolists/{self.todolist_id}"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()

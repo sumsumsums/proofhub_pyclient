@@ -58,16 +58,14 @@ class Topics(ProofHubObject):
         else:
             self.topics = []
 
-        records = self.getResponseAsArray()
-
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = Topic(self.proofhubApi, self.project_id, dir, jsonitem)
             self.topics.append(objitem)
 
     def getTopics(self, save=True):
         url = f"/projects/{self.project_id}/topics"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
@@ -121,9 +119,7 @@ class TopicComments(ProofHubObject):
         else:
             self.topiccom = []
             
-        records = self.getResponseAsArray()
-            
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             if not jsonitem["comments"]:
                 continue
             
@@ -135,7 +131,7 @@ class TopicComments(ProofHubObject):
     def getTopicComments(self, save=True):
         url = f"/projects/{self.project_id}/topics/{self.topic_id}/comments"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()

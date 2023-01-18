@@ -55,8 +55,7 @@ class Folders(ProofHubObject):
         else:
             self.folders = []
         
-        records = self.getResponseAsArray()
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = Folder(self.proofhubApi, dir, self.project_id, jsonitem)
             self.folders.append(objitem)
             self.getSubFolder(dir, jsonitem)
@@ -74,7 +73,7 @@ class Folders(ProofHubObject):
     def getFolders(self, save_lists=True):
         url = f"projects/{self.project_id}/folders"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
         if save_lists == True:
             self.saveJson()
@@ -164,15 +163,14 @@ class Files(ProofHubObject):
         else:
             self.files = []
 
-        records = self.getResponseAsArray()
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = File(self.proofhubApi, dir, jsonitem)
             self.files.append(objitem)
 
     def getFiles(self, save=True):
         url = f"projects/{self.project_id}/folders/{self.folder_id}/files"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()

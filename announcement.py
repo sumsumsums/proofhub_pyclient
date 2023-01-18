@@ -14,7 +14,7 @@ class Announcement(ProofHubObject):
     announcement_id = ""
     root_file_path = ""
     
-    def __init__(self, proofhubApi: ProofhubApi, file_path, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, file_path, json_data=None):
         super().__init__(json_data, proofhubApi)
         self.root_file_path = file_path
         self.setAnnouncementtId()
@@ -34,8 +34,8 @@ class Announcement(ProofHubObject):
         
         url = f"announcements/{self.announcement_id}/comments"
 
-        comments = self.proofhubApi.get_data_string(url)
-        if comments:
+        comments = self.proofhubApi.get_data_array(url)
+        if len(comments) > 0:
             filename = f"{self.announcement_id}_announcement_comments.json"
             self.saveJsonFile(self.root_file_path, filename, comments) 
 
@@ -46,29 +46,31 @@ class Announcements(ProofHubObject):
     
     announcements = []
     
-    def __init__(self, proofhubApi: ProofhubApi, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
         
     def parseJsonResponse(self):
         dir = self.getFilePath()
         
-        if self.announcements:
-            self.announcements.clear()
-        else:
-            self.announcements = []
-        
-        if isinstance(self.json_data, dict):
-            records = self.json_data["announcements"]
-        
-            for jsonitem in records:
-                objitem = Announcement(self.proofhubApi, dir, jsonitem)
-                self.announcements.append(objitem)
+        for jsonitem in self.json_data:
+            objitem = Announcement(self.proofhubApi, dir, jsonitem)
+            self.announcements.append(objitem)
 
     def getAnnouncements(self, save=True):
-        self.json_data = self.proofhubApi.get_data_string('announcements')
+        resp_list = self.proofhubApi.get_data_array('announcements')
+        self.json_data = []
+        
+        for resp_record in resp_list:
+            if not resp_record["announcements"]:
+                continue
+            ann_record = resp_record["announcements"]
+            self.json_data.extend(ann_record)
+
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+            
+        self.archive()
 
     def getFilePath(self) -> str:
         return f"{self.proofhubApi.outputdir}/announcements/"

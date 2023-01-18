@@ -70,15 +70,74 @@ class ProofhubApi(object):
                 self.config.logger.error(logmsg)
                 sys.exit(1)
 
-    def get_data_string(self, prefix):
-        url = self.urlbase + prefix
+    def get_data_array(self, prefix, package_requests=True):
+        url_base = self.urlbase + prefix
         
-        api_response = self.send_request_check(url)
-        if not api_response:
-            return []
-        else:
-            return api_response.json()
+        result = []
+        result_request = []
         
+        do_request=True
+        start = 0
+        limit = 90
+        
+        while do_request == True:
+            url = url_base
+            
+            if package_requests == True:
+                url = url + "?start=" + str(start) + "&limit=" + str(limit)
+            
+            api_response = self.send_request_check(url)
+            start = start + limit
+            
+            if not api_response:
+                do_request = False
+            else:
+                result_request.clear()
+                
+                json_data = api_response.json()
+                result_request = self.getResponseAsArray(json_data)
+                if len(result_request) > 0:
+                    result.extend(result_request)
+                
+                if package_requests == False or len(result_request) < limit:
+                    do_request = False 
+        
+        return result
+
+    def get_data_string(self, prefix, package_requests=True):
+        url_base = self.urlbase + prefix
+        
+        result = []
+        result_request = []
+        
+        do_request=True
+        start = 0
+        limit = 90
+        
+        while do_request == True:
+            url = url_base
+            
+            if package_requests == True:
+                url = url + "?start=" + str(start) + "&limit=" + str(limit)
+            
+            api_response = self.send_request_check(url)
+            start = start + limit
+            
+            if not api_response:
+                do_request = False
+            else:
+                result_request.clear()
+                
+                json_data = api_response.json()
+                result_request = self.getResponseAsArray(json_data)
+                if len(result_request) > 0:
+                    result.extend(result_request)
+                
+                if package_requests == False or len(result_request) == 0:
+                    do_request = False 
+        
+        return result
+
     def get_file(self, full_url, dirname, filename, forced_download=False):
         # check file already exists
         if forced_download == False and self.check_file_exists(filename):
@@ -102,5 +161,18 @@ class ProofhubApi(object):
     def check_file_exists(self, filename):
         fileos = Path(filename)
         return fileos.is_file()
+
+    def getResponseAsArray(self, json_data):
+        records = []
+        if not json_data:
+            return records
+        
+        if isinstance(json_data, dict):
+            records.append(json_data)
+        else:
+            records = json_data
+        
+        return records
+
 
                     

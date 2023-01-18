@@ -1,5 +1,6 @@
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject 
+from file_api import FileApi
 
 from task import Todolists
 from notes import Notebooks
@@ -68,14 +69,38 @@ class Projects(ProofHubObject):
             self.items.append(objitem)
 
     def getProjects(self, save=True):
-        self.json_data = self.proofhubApi.get_data_string('projects')
+        self.json_data = self.proofhubApi.get_data_array('projects')
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+            
+        self.archive()
 
     def saveJson(self):
-        dir = f"{self.proofhubApi.outputdir}/projects"
+        dir = self.getRootPath()
         self.saveJsonFile(dir, "projects.json", self.json_data)
         
         for item in self.items:
             item.getProjectData()
+            
+    def getRootPath(self):
+        return f"{self.proofhubApi.outputdir}/projects"
+            
+    def archive(self):
+        if self.proofhubApi.config.archive_deprecated == False:
+            return 
+        
+        fileApi = FileApi(self.proofhubApi.config)
+        subdirs = fileApi.getSubDirectories(directory=self.getRootPath())
+        for key in subdirs:
+            found = False
+            for project in self.items:
+                if str(key) == str(project.project_id):
+                    found = True 
+                    break
+            
+            if found == False:
+                subdir = subdirs.get(key)
+                fileApi.moveDirectoryArchive(subdir, 'projects', key)
+                    
+    

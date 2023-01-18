@@ -26,6 +26,9 @@ class Config(object):
     get_notebooks = True
     get_tasklists = True
     
+    archive_deprecated = False
+    archive_dir = ''
+    
     def __init__(self):
         self.parser = None
 
@@ -40,6 +43,7 @@ class Config(object):
         self.initializeLogger(args)
         
         configfile = args['configfile']
+        
         self.readConfig(configfile)
 
     def readConfig(self, configfile):
@@ -67,6 +71,9 @@ class Config(object):
         self.get_topics = config.getboolean(self.default_section, 'get_topics', fallback=True)
         self.get_notebooks = config.getboolean(self.default_section, 'get_notebooks', fallback=True)
         self.get_tasklists = config.getboolean(self.default_section, 'get_tasklists', fallback=True)
+
+        self.archive_deprecated = config.getboolean(self.default_section, 'archive_deprecated', fallback=False)
+        self.archive_dir = config.get(self.default_section, 'archive_dir')
 
     def initializeLogger(self, vars):
         formatter = logging.Formatter('%(asctime)s - %(levelname)-8s - %(message)s')

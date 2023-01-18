@@ -42,7 +42,7 @@ if config.get_roles:
     config.logger.info("Getting roles")
     roles = Roles(proofhubApi=ph)
     roles.getRoles()
-
+    
 if config.get_category:
     config.logger.info("Getting categories")
     categories = Categories(proofhubApi=ph)

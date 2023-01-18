@@ -8,37 +8,35 @@ from proofhub_api import ProofhubApi
 class ProofHubObject(object):
     
     proofhubApi: ProofhubApi = None
-    json_data = ''
+    json_data = None
 
     def __init__(self, json_data, proofhubApi: ProofhubApi):
         self.proofhubApi = proofhubApi
-        self.json_data = json_data
+        if not json_data:
+            self.json_data = []
+        elif isinstance(json_data, list):
+            self.json_data = []
+            self.json_data.extend(json_data)
+        elif isinstance(json_data, dict):
+            self.json_data = json_data
+        else:
+            self.json_data = []
         
-    def saveJsonFile(self, dirname, filename, json_string, mode='w'):
+    def saveJsonFile(self, dirname, filename, json_data, mode='w'):
         directory = Path(dirname)
         directory.mkdir(exist_ok=True, parents=True)
         
         filename = f"{dirname}/{filename}"
         
         with open(f"{filename}", mode, encoding='utf-8') as f:
-            json.dump(json_string, f) 
-    
-    def getResponseAsArray(self):
-        records = []
-        if not self.json_data:
-            return records
-        
-        if isinstance(self.json_data, dict):
-            records.append(self.json_data)
-        else:
-            records = self.json_data
-        
-        return records
+            json.dump(json_data, f) 
 
     def saveJsonFileNotEmpty(self, filename):
-        records = self.getResponseAsArray()
-        if not records:
+        if not self.json_data or len(self.json_data) == 0:
             return
-        else:
-            dir = self.getFilePath()
-            self.saveJsonFile(dir, filename, self.json_data)  
+        
+        dir = self.getFilePath()
+        self.saveJsonFile(dir, filename, self.json_data)
+    
+    def archive(self):
+        return

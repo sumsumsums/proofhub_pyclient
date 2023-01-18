@@ -11,7 +11,7 @@ from baseobject import ProofHubObject
 #       
 class Role(ProofHubObject):
     
-    def __init__(self, proofhubApi: ProofhubApi, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
 
 #
@@ -21,7 +21,7 @@ class Roles(ProofHubObject):
     
     roles = []
     
-    def __init__(self, proofhubApi: ProofhubApi, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
         
     def parseJsonResponse(self):
@@ -30,17 +30,17 @@ class Roles(ProofHubObject):
         else:
             self.roles = []
         
-        records = self.getResponseAsArray()
-        
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = Role(self.proofhubApi, jsonitem)
             self.roles.append(objitem)
 
     def getRoles(self, save=True):
-        self.json_data = self.proofhubApi.get_data_string('roles')
+        self.json_data = self.proofhubApi.get_data_array('roles')
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+            
+        self.archive()
 
     def getFilePath(self) -> str:
         return f"{self.proofhubApi.outputdir}/roles/"

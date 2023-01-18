@@ -12,7 +12,7 @@ from baseobject import ProofHubObject
 #
 class Category(ProofHubObject):
     
-    def __init__(self, proofhubApi: ProofhubApi, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
 
 #
@@ -22,7 +22,7 @@ class Categories(ProofHubObject):
     
     categories = []
     
-    def __init__(self, proofhubApi: ProofhubApi, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
         
     def parseJsonResponse(self):
@@ -31,17 +31,17 @@ class Categories(ProofHubObject):
         else:
             self.categories = []
         
-        records = self.getResponseAsArray()
-        
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = Category(self.proofhubApi, jsonitem)
             self.categories.append(objitem)
 
     def getCategories(self, save=True):
-        self.json_data = self.proofhubApi.get_data_string('categories')
+        self.json_data = self.proofhubApi.get_data_array('categories')
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+            
+        self.archive()
 
     def getFilePath(self) -> str:
         return f"{self.proofhubApi.outputdir}/categories/"

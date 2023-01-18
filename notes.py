@@ -53,15 +53,14 @@ class Notebooks(ProofHubObject):
         else:
             self.notebooks = []
         
-        records = self.getResponseAsArray()
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = Notebook(self.proofhubApi, dir, self.project_id, jsonitem)
             self.notebooks.append(objitem)
 
     def getNotebooks(self, save=True):
         url = f"projects/{self.project_id}/notebooks"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
@@ -98,11 +97,22 @@ class Note(ProofHubObject):
     def getFilePath(self) -> str:
         return f"{self.root_file_path}/" 
 
+    def getNoteFromList(self, note):
+        self.json_data = {}
+        if not note:
+            return
+        elif isinstance(note, dict):
+            self.json_data = note.copy()
+        elif isinstance(note, list):
+            if len(note) > 0:
+                self.json_data = note.pop(0).copy()
+
     #v3/projects/23423233/notebooks/41246749/notes/80731708
     def getNote(self):
         url = f"projects/{self.project_id}/notebooks/{self.notebook_id}/notes/{self.note_id}"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        json_array = self.proofhubApi.get_data_array(url)
+        self.getNoteFromList(json_array)
         filename = f"{self.note_id}_note.json"
         self.saveJsonFileNotEmpty(filename)
     
@@ -113,7 +123,7 @@ class Note(ProofHubObject):
         
         url = f"projects/{self.project_id}/notebooks/{self.notebook_id}/notes/{self.note_id}/comments"
         
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         filename = f"{self.note_id}_note_comments.json"
         self.saveJsonFileNotEmpty(filename)
 
@@ -139,15 +149,14 @@ class Notes(ProofHubObject):
         else:
             self.notes = []
         
-        records = self.getResponseAsArray()
-        for jsonitem in records:
+        for jsonitem in self.json_data:
             objitem = Note(self.proofhubApi, dir, self.project_id, self.notebook_id, jsonitem)
             self.notes.append(objitem)
 
     def getNotes(self, save=True):
         url = f"projects/{self.project_id}/notebooks/{self.notebook_id}/notes"
 
-        self.json_data = self.proofhubApi.get_data_string(url)
+        self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
