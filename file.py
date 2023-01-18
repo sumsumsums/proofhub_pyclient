@@ -13,26 +13,26 @@ class Folder(ProofHubObject):
 
     project_id = None
     folder_id = None
-    root_file_path = ""
+    sub_file_path = ""
     files = None
     
-    def __init__(self, proofhubApi: ProofhubApi, file_path, project_id, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, sub_file_path, project_id, json_data=""):
         super().__init__(json_data, proofhubApi)
-        self.root_file_path = file_path
+        self.sub_file_path = sub_file_path
         self.project_id = project_id
         self.setFolderId()
 
     def setFolderId(self):
         self.folder_id = self.json_data["id"]
-    
-    def getFilePath(self) -> str:
-        return f"{self.root_file_path}/{self.folder_id}"
+
+    def getSubPath(self) -> str:
+        return f"{self.sub_file_path}/{self.folder_id}"
 
     def getFiles(self):
         if self.files:
             self.files = None
 
-        self.files = Files(self.proofhubApi, self.project_id, self.folder_id, self.getFilePath())
+        self.files = Files(self.proofhubApi, self.project_id, self.folder_id, self.getSubPath())
         self.files.getFiles()
 
 #
@@ -48,7 +48,7 @@ class Folders(ProofHubObject):
         self.project_id= project_id
 
     def parseJsonResponse(self):
-        dir = self.getFilePath()
+        dir = self.getSubPath()
         
         if self.folders:
             self.folders.clear()
@@ -78,14 +78,23 @@ class Folders(ProofHubObject):
         if save_lists == True:
             self.saveJson()
 
+        self.archive()
+
     def saveJson(self):
         self.saveJsonFileNotEmpty("folders.json")
         
         for folder in self.folders:
             folder.getFiles()
 
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/projects/{self.project_id}/folders"
+    def getSubPath(self) -> str:
+        return f"projects/{self.project_id}/folders"
+
+    def archive(self):
+        ids = []
+        for item in self.folders:
+            ids.append(str(item.folder_id))
+        
+        self.archiveItems(ids)
 
 # files
 #
@@ -97,21 +106,21 @@ class Folders(ProofHubObject):
 #
 class File(ProofHubObject):
 
-    root_file_path = ""
+    sub_file_path = ""
     file_id = None
     file_name = None
 
-    def __init__(self, proofhubApi: ProofhubApi, file_path, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, sub_file_path, json_data=""):
         super().__init__(json_data, proofhubApi)
-        self.root_file_path = file_path
+        self.sub_file_path = sub_file_path
         self.setFileId()
 
     def setFileId(self):
         self.file_id = self.json_data["id"]
         self.file_name = self.json_data["name"]
 
-    def getFilePath(self) -> str:
-        return f"{self.root_file_path}/{self.file_name}"
+    def getSubPath(self) -> str:
+        return f"{self.sub_file_path}/{self.file_name}"
 
     def getFileUrl(self):
         urlfull = None
@@ -137,7 +146,8 @@ class File(ProofHubObject):
         if urlfull == None:
             return
 
-        self.proofhubApi.get_file(urlfull, self.root_file_path, filename)
+        dir = f"{super().getFilePath(no_sub=True)}/{self.sub_file_path}"
+        self.proofhubApi.get_file(urlfull, dir, filename)
 
 #
 # files collection
@@ -146,25 +156,23 @@ class Files(ProofHubObject):
 
     project_id = None
     folder_id = None
-    root_file_path = ""
+    sub_file_path = ""
     files = []
     
-    def __init__(self, proofhubApi: ProofhubApi, project_id, folder_id, file_path, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, project_id, folder_id, sub_file_path, json_data=""):
         super().__init__(json_data, proofhubApi)
         self.folder_id = folder_id
         self.project_id = project_id
-        self.root_file_path = file_path
+        self.sub_file_path = sub_file_path
         
     def parseJsonResponse(self):
-        dir = self.getFilePath()
-
         if self.files:
             self.files.clear()
         else:
             self.files = []
 
         for jsonitem in self.json_data:
-            objitem = File(self.proofhubApi, dir, jsonitem)
+            objitem = File(self.proofhubApi, self.getSubPath(), jsonitem)
             self.files.append(objitem)
 
     def getFiles(self, save=True):
@@ -174,6 +182,8 @@ class Files(ProofHubObject):
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+    
+        self.archive()
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("files.json")
@@ -181,5 +191,12 @@ class Files(ProofHubObject):
         for file in self.files:
             file.downloadFile()
 
-    def getFilePath(self) -> str:
-        return f"{self.root_file_path}"
+    def getSubPath(self) -> str:
+        return f"{self.sub_file_path}"
+
+    def archive(self):
+        ids = []
+        for item in self.files:
+            ids.append(str(item.file_id))
+        
+        self.archiveItems(ids)

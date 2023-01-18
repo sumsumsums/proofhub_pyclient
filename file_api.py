@@ -1,6 +1,7 @@
 from os import listdir
 from os.path import isfile, join
 import shutil
+import pathlib
 
 from config import Config
 
@@ -12,6 +13,12 @@ class FileApi(object):
         self.config = config
     
     def getSubDirectories(self, directory):
+        if not directory:
+            return
+        path = pathlib.Path(directory)
+        if not path.exists() or not path.is_dir():
+            return
+        
         subdir = {}
 
         for f in listdir(directory):

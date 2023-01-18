@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from file_api import FileApi
 from proofhub_api import ProofhubApi
 
 
@@ -38,11 +39,14 @@ class ProofHubObject(object):
         dir = self.getFilePath()
         self.saveJsonFile(dir, filename, self.json_data)
     
-    def getFilePath(self) -> str:
+    def getFilePath(self, no_sub=False) -> str:
         base = f"{self.proofhubApi.outputdir}"
+        if no_sub == True:
+            return base 
+
         sub = self.getSubPath()
         if len(sub) > 0:
-            return f"{base}/sub"
+            return f"{base}/{sub}"
         else:
             return base
     
@@ -51,3 +55,20 @@ class ProofHubObject(object):
     
     def archive(self):
         return
+
+    def archiveItems(self, items):
+        if self.proofhubApi.config.archive_deprecated == False:
+            return 
+        
+        fileApi = FileApi(self.proofhubApi.config)
+        subdirs = fileApi.getSubDirectories(directory=self.getFilePath())
+        if not subdirs:
+            return
+        
+        for key in subdirs:
+            found = False
+            if items and str(key) in items:
+                continue 
+            else:
+                subdir = subdirs.get(key)
+                fileApi.moveDirectoryArchive(subdir, self.getSubPath(), key)

@@ -56,51 +56,40 @@ class Project(ProofHubObject):
 #
 class Projects(ProofHubObject):
     
-    items = []
+    projects = []
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=""):
         super().__init__(json_data, proofhubApi)
         
     def parseJsonResponse(self):
-        self.items.clear()
+        self.projects.clear()
         
         for jsonitem in self.json_data:
             objitem = Project(self.proofhubApi, jsonitem)
-            self.items.append(objitem)
+            self.projects.append(objitem)
 
     def getProjects(self, save=True):
         self.json_data = self.proofhubApi.get_data_array('projects')
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
-            
+        
         self.archive()
 
     def saveJson(self):
         dir = self.getFilePath()
         self.saveJsonFile(dir, "projects.json", self.json_data)
         
-        for item in self.items:
+        for item in self.projects:
             item.getProjectData()
     
     def getSubPath(self) -> str:
         return "projects"
             
     def archive(self):
-        if self.proofhubApi.config.archive_deprecated == False:
-            return 
+        ids = []
+        for item in self.projects:
+            ids.append(str(item.project_id))
         
-        fileApi = FileApi(self.proofhubApi.config)
-        subdirs = fileApi.getSubDirectories(directory=self.getFilePath())
-        for key in subdirs:
-            found = False
-            for project in self.items:
-                if str(key) == str(project.project_id):
-                    found = True 
-                    break
-            
-            if found == False:
-                subdir = subdirs.get(key)
-                fileApi.moveDirectoryArchive(subdir, 'projects', key)
-                    
+        self.archiveItems(ids)
     

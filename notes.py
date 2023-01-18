@@ -14,20 +14,20 @@ class Notebook(ProofHubObject):
 
     project_id = None
     notebook_id = None
-    root_file_path = ""
+    sub_file_path = ""
     notes = None
     
-    def __init__(self, proofhubApi: ProofhubApi, file_path, project_id, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, sub_file_path, project_id, json_data=""):
         super().__init__(json_data, proofhubApi)
-        self.root_file_path = file_path
+        self.sub_file_path = sub_file_path
         self.project_id = project_id
         self.setNotebookId()
 
     def setNotebookId(self):
         self.notebook_id = self.json_data["id"]
-    
-    def getFilePath(self) -> str:
-        return f"{self.root_file_path}/{self.notebook_id}"
+
+    def getSubPath(self) -> str:
+        return f"{self.sub_file_path}/{self.notebook_id}"
 
     def getNotes(self):
         self.notes = Notes(self.proofhubApi, self.project_id, self.notebook_id)
@@ -46,7 +46,7 @@ class Notebooks(ProofHubObject):
         self.project_id = project_id
         
     def parseJsonResponse(self):
-        dir = self.getFilePath()
+        dir = self.getSubPath()
         
         if self.notebooks:
             self.notebooks.clear()
@@ -64,6 +64,8 @@ class Notebooks(ProofHubObject):
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+        
+        self.archive()
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("notebooks.json")
@@ -71,8 +73,15 @@ class Notebooks(ProofHubObject):
         for notebook in self.notebooks:
             notebook.getNotes()
 
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/projects/{self.project_id}/notebooks"
+    def getSubPath(self) -> str:
+        return f"projects/{self.project_id}/notebooks" 
+
+    def archive(self):
+        ids = []
+        for item in self.notebooks:
+            ids.append(str(item.notebook_id))
+        
+        self.archiveItems(ids)
 
 #
 # single note
@@ -82,20 +91,20 @@ class Note(ProofHubObject):
     note_id = None
     notebook_id = None
     project_id = None
-    root_file_path = ""
+    sub_file_path = ""
     
-    def __init__(self, proofhubApi: ProofhubApi, file_path, project_id, notebook_id, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, sub_file_path, project_id, notebook_id, json_data=""):
         super().__init__(json_data, proofhubApi)
-        self.root_file_path = file_path
+        self.sub_file_path = sub_file_path
         self.notebook_id = notebook_id 
         self.project_id = project_id
         self.setNoteId()
 
     def setNoteId(self):
         self.note_id = self.json_data["id"]
-    
-    def getFilePath(self) -> str:
-        return f"{self.root_file_path}/" 
+
+    def getSubPath(self) -> str:
+        return f"{self.sub_file_path}/" 
 
     def getNoteFromList(self, note):
         self.json_data = {}
@@ -142,7 +151,7 @@ class Notes(ProofHubObject):
         self.project_id = project_id
         
     def parseJsonResponse(self):
-        dir = self.getFilePath()
+        dir = self.getSubPath()
         
         if self.notes:
             self.notes.clear()
@@ -160,6 +169,8 @@ class Notes(ProofHubObject):
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+        
+        self.archive()
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("notes.json")
@@ -168,5 +179,12 @@ class Notes(ProofHubObject):
             note.getNote()
             note.getComments()
 
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/projects/{self.project_id}/notebooks/{self.notebook_id}"
+    def getSubPath(self) -> str:
+        return f"projects/{self.project_id}/notebooks/{self.notebook_id}"
+
+    def archive(self):
+        ids = []
+        for item in self.notes:
+            ids.append(str(item.note_id))
+        
+        self.archiveItems(ids)

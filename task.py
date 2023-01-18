@@ -67,6 +67,8 @@ class Todolists(ProofHubObject):
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+        
+        self.archive()
 
     def saveJson(self):
         dir = self.getFilePath( )
@@ -79,21 +81,11 @@ class Todolists(ProofHubObject):
         return f"projects/{self.project_id}/todolists"
 
     def archive(self):
-        if self.proofhubApi.config.archive_deprecated == False:
-            return 
+        ids = []
+        for item in self.todolists:
+            ids.append(str(item.todolist_id))
         
-        fileApi = FileApi(self.proofhubApi.config)
-        subdirs = fileApi.getSubDirectories(directory=self.getFilePath())
-        for key in subdirs:
-            found = False
-            for item in self.todolists:
-                if str(key) == str(item.todolist_id):
-                    found = True 
-                    break
-            
-            if found == False:
-                subdir = subdirs.get(key)
-                fileApi.moveDirectoryArchive(subdir, self.getSubPath(), key)
+        self.archiveItems(ids)
 
 # tasks
 #
@@ -172,6 +164,8 @@ class Tasks(ProofHubObject):
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+        
+        self.archive()
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("tasks.json")
@@ -183,18 +177,8 @@ class Tasks(ProofHubObject):
         return f"{self.sub_file_path}/tasks"
     
     def archive(self):
-        if self.proofhubApi.config.archive_deprecated == False:
-            return 
+        ids = []
+        for item in self.tasks:
+            ids.append(str(item.task_id))
         
-        fileApi = FileApi(self.proofhubApi.config)
-        subdirs = fileApi.getSubDirectories(directory=self.getRootPath())
-        for key in subdirs:
-            found = False
-            for item in self.tasks:
-                if str(key) == str(item.task_id):
-                    found = True 
-                    break
-            
-            if found == False:
-                subdir = subdirs.get(key)
-                fileApi.moveDirectoryArchive(subdir, self.getSubPath(), key)
+        self.archiveItems(ids)

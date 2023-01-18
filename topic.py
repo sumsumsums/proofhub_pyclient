@@ -11,21 +11,21 @@ from baseobject import ProofHubObject
 #
 class Topic(ProofHubObject):
 
-    root_file_path = ""
+    sub_file_path = ""
     topic_id = None
     project_id = None
 
-    def __init__(self, proofhubApi: ProofhubApi, project_id, file_path, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, project_id, sub_file_path, json_data=""):
         super().__init__(json_data, proofhubApi)
-        self.root_file_path = file_path
+        self.sub_file_path = sub_file_path
         self.project_id = project_id
         self.setTopicId()
 
     def setTopicId(self):
         self.topic_id = self.json_data["id"]
     
-    def getFilePath(self) -> str:
-        return f"{self.root_file_path}/{self.topic_id}"
+    def getSubPath(self) -> str:
+        return f"{self.sub_file_path}/{self.topic_id}"
     
     def getTopicComments(self):
         if not self.json_data or not self.json_data ["comments"]:
@@ -35,7 +35,7 @@ class Topic(ProofHubObject):
         if not comments_json["count"] or comments_json["count"] == 0:
             return
 
-        comments = TopicComments(self.proofhubApi, self.project_id, self.topic_id, self.getFilePath())
+        comments = TopicComments(self.proofhubApi, self.project_id, self.topic_id, self.getSubPath())
         comments.getTopicComments()
 
 #
@@ -51,7 +51,7 @@ class Topics(ProofHubObject):
         self.project_id = project_id
         
     def parseJsonResponse(self):
-        dir = self.getFilePath( )
+        dir = self.getSubPath( )
         
         if self.topics:
             self.topics.clear()
@@ -69,6 +69,8 @@ class Topics(ProofHubObject):
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+        
+        self.archive()
 
     def saveJson(self):
         dir = self.getFilePath( )
@@ -76,9 +78,16 @@ class Topics(ProofHubObject):
         
         for topic in self.topics:
             topic.getTopicComments()
-    
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/projects/{self.project_id}/topics"
+
+    def getSubPath(self) -> str:
+        return f"projects/{self.project_id}/topics"
+
+    def archive(self):
+        ids = []
+        for item in self.topics:
+            ids.append(str(item.topic_id))
+        
+        self.archiveItems(ids)
 
 #
 # topic comment
@@ -87,11 +96,11 @@ class TopicComment(ProofHubObject):
 
     topic_id = None
     project_id = None
-    root_file_path = ""
+    sub_file_path = ""
 
-    def __init__(self, proofhubApi: ProofhubApi, project_id, topic_id, file_path, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, project_id, topic_id, sub_file_path, json_data=""):
         super().__init__(json_data, proofhubApi)
-        self.root_file_path = file_path
+        self.sub_file_path = sub_file_path
         self.topic_id = topic_id
         self.project_id = project_id
 
@@ -135,9 +144,19 @@ class TopicComments(ProofHubObject):
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
+        
+        self.archive()
 
     def saveJson(self):
         self.saveJsonFile(self.getFilePath( ), "comments.json", self.json_data)
 
     def getSubPath(self) -> str:
         return f"{self.sub_file_path}/"
+
+    def archive(self):
+        return
+        #ids = []
+        #for item in self.topiccom:
+        #    ids.append(str(item.topic_id))
+        #
+        #self.archive(ids)
