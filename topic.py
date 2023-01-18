@@ -102,17 +102,17 @@ class TopicComments(ProofHubObject):
     
     topic_id = None
     project_id = None
-    root_file_path = ""
+    sub_file_path = ""
     topiccom = []
     
-    def __init__(self, proofhubApi: ProofhubApi, project_id, topic_id, file_path, json_data=""):
+    def __init__(self, proofhubApi: ProofhubApi, project_id, topic_id, sub_file_path, json_data=""):
         super().__init__(json_data, proofhubApi)
         self.topic_id = topic_id
         self.project_id = project_id
-        self.root_file_path = file_path
+        self.sub_file_path = sub_file_path
         
     def parseJsonResponse(self):
-        dir = self.getFilePath( )
+        dir = self.getSubPath( )
 
         if self.topiccom:
             self.topiccom.clear()
@@ -138,6 +138,6 @@ class TopicComments(ProofHubObject):
 
     def saveJson(self):
         self.saveJsonFile(self.getFilePath( ), "comments.json", self.json_data)
-    
-    def getFilePath(self) -> str:
-        return f"{self.root_file_path}/"
+
+    def getSubPath(self) -> str:
+        return f"{self.sub_file_path}/"

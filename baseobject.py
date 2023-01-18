@@ -38,5 +38,16 @@ class ProofHubObject(object):
         dir = self.getFilePath()
         self.saveJsonFile(dir, filename, self.json_data)
     
+    def getFilePath(self) -> str:
+        base = f"{self.proofhubApi.outputdir}"
+        sub = self.getSubPath()
+        if len(sub) > 0:
+            return f"{base}/sub"
+        else:
+            return base
+    
+    def getSubPath(self) -> str:
+        return ""
+    
     def archive(self):
         return

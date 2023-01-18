@@ -77,21 +77,21 @@ class Projects(ProofHubObject):
         self.archive()
 
     def saveJson(self):
-        dir = self.getRootPath()
+        dir = self.getFilePath()
         self.saveJsonFile(dir, "projects.json", self.json_data)
         
         for item in self.items:
             item.getProjectData()
-            
-    def getRootPath(self):
-        return f"{self.proofhubApi.outputdir}/projects"
+    
+    def getSubPath(self) -> str:
+        return "projects"
             
     def archive(self):
         if self.proofhubApi.config.archive_deprecated == False:
             return 
         
         fileApi = FileApi(self.proofhubApi.config)
-        subdirs = fileApi.getSubDirectories(directory=self.getRootPath())
+        subdirs = fileApi.getSubDirectories(directory=self.getFilePath())
         for key in subdirs:
             found = False
             for project in self.items:
