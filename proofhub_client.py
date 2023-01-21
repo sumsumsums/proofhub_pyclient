@@ -23,7 +23,6 @@ config.logger.info(today)
 
 # TODO
 # Files: falls nicht full_image gegeben, über download versuchen?
-# Cleanup alte Dateien
 #
 
 ph = ProofhubApi(config=config)
