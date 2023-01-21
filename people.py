@@ -1,24 +1,26 @@
+"""
+people
+
+Endpoint GET
+GET v3/people
+"""
 
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
 
-# people 
-#
-# Endpoint GET
-# GET v3/people
-
-#
-# single people
-#    
 class People(ProofHubObject):
+    """
+    single people
+    """
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
 
-#
-# people collection
-#
+
 class Peoples(ProofHubObject):
+    """
+    people collection
+    """
     
     people = []
     
@@ -43,8 +45,8 @@ class Peoples(ProofHubObject):
             
         self.archive()
 
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/people/"
+    def getSubPath(self) -> str:
+        return f"people"
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("people.json")

@@ -1,3 +1,7 @@
+"""
+Configuration object parsing and holding all configuration stuff
+"""
+
 import configparser
 import argparse
 import logging

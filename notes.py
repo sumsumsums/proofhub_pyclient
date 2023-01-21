@@ -1,16 +1,17 @@
+"""
+notebooks and notes
+
+Endpoint GET
+GET v3/projects/<project_id>/notebooks
+"""
+
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
 
-
-# notebooks
-#
-# Endpoint GET
-# GET v3/announcements
-
-#
-# single notebook
-#
 class Notebook(ProofHubObject):
+    """
+    single notebook
+    """
 
     project_id = None
     notebook_id = None
@@ -33,10 +34,11 @@ class Notebook(ProofHubObject):
         self.notes = Notes(self.proofhubApi, self.project_id, self.notebook_id)
         self.notes.getNotes()
 
-#
-# notebooks collection
-#
+
 class Notebooks(ProofHubObject):
+    """
+    notebooks collection
+    """
     
     project_id = None
     notebooks = []
@@ -83,10 +85,10 @@ class Notebooks(ProofHubObject):
         
         self.archiveItems(ids)
 
-#
-# single note
-#
 class Note(ProofHubObject):
+    """
+    single note
+    """
 
     note_id = None
     notebook_id = None
@@ -136,10 +138,10 @@ class Note(ProofHubObject):
         filename = f"{self.note_id}_note_comments.json"
         self.saveJsonFileNotEmpty(filename)
 
-#
-# notes collection
-#
 class Notes(ProofHubObject):
+    """
+    notes collection
+    """
     
     notebook_id = None
     project_id = None

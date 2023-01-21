@@ -1,15 +1,17 @@
+"""
+annoucements 
+
+Endpoint GET
+GET v3/announcements
+"""
+
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
 
-# annoucements 
-#
-# Endpoint GET
-# GET v3/announcements
-
-#
-# single announcement
-#
 class Announcement(ProofHubObject):
+    """
+    single announcement
+    """
     
     announcement_id = ""
     root_file_path = ""
@@ -39,10 +41,10 @@ class Announcement(ProofHubObject):
             filename = f"{self.announcement_id}_announcement_comments.json"
             self.saveJsonFile(self.root_file_path, filename, comments) 
 
-#
-# announcements collection
-#
 class Announcements(ProofHubObject):
+    """
+    announcements collection
+    """
     
     announcements = []
     
@@ -72,8 +74,8 @@ class Announcements(ProofHubObject):
             
         self.archive()
 
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/announcements/"
+    def getSubPath(self) -> str:
+        return f"announcements"
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("announcements.json")

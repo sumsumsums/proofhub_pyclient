@@ -1,15 +1,17 @@
+"""
+folders and files
+
+Endpoint GET
+GET v3/projects/<project_id>/folders
+"""
+
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
 
-# folders
-#
-# Endpoint GET
-# GET v3/projects/<project_id>/folders
-
-#
-# single folder
-#
 class Folder(ProofHubObject):
+    """
+    folder
+    """
 
     project_id = None
     folder_id = None
@@ -35,10 +37,11 @@ class Folder(ProofHubObject):
         self.files = Files(self.proofhubApi, self.project_id, self.folder_id, self.getSubPath())
         self.files.getFiles()
 
-#
-# folders collection
-#
+
 class Folders(ProofHubObject):
+    """
+    folders collection
+    """
     
     project_id = None
     folders = []
@@ -96,15 +99,11 @@ class Folders(ProofHubObject):
         
         self.archiveItems(ids)
 
-# files
-#
-# Endpoint GET
-# 
 
-#
-# single file
-#
 class File(ProofHubObject):
+    """
+    single file
+    """
 
     sub_file_path = ""
     file_id = None
@@ -149,10 +148,11 @@ class File(ProofHubObject):
         dir = f"{super().getFilePath(no_sub=True)}/{self.sub_file_path}"
         self.proofhubApi.get_file(urlfull, dir, filename)
 
-#
-# files collection
-#
+
 class Files(ProofHubObject):
+    """
+    files collection
+    """
 
     project_id = None
     folder_id = None

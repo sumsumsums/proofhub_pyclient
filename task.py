@@ -1,16 +1,17 @@
+"""
+todolists / task collections and tasks
+
+Endpoint GET
+GET v3/projects/<project_id>/todolists
+"""
+
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
-from file_api import FileApi
 
-# todolists 
-#
-# Endpoint GET
-# GET v3/projects/<project_id>/todolists
-
-#
-# single todolist
-#
 class Todolist(ProofHubObject):
+    """
+    single todolist
+    """
     
     project_id = None
     todolist_id = None
@@ -36,10 +37,11 @@ class Todolist(ProofHubObject):
         self.tasks = Tasks(self.proofhubApi, self.project_id, self.todolist_id, self.getSubPath())
         self.tasks.getTasks()
 
-#
-# todolists collection
-#
+
 class Todolists(ProofHubObject):
+    """
+    todolists collection
+    """
     
     project_id = None
     todolists = []
@@ -87,15 +89,11 @@ class Todolists(ProofHubObject):
         
         self.archiveItems(ids)
 
-# tasks
-#
-# Endpoint GET
-# GET v3/projects/<project_id>/todolists/<todolist_id>/tasks
 
-#
-# single task
-#
 class Task(ProofHubObject):
+    """
+    single topic
+    """
 
     task_id = None
     project_id = None 
@@ -129,10 +127,12 @@ class Task(ProofHubObject):
         filename = f"{self.task_id}_task_comments.json"
         self.saveJsonFileNotEmpty(filename)
 
-#
-# task collection
-#
+
 class Tasks(ProofHubObject):
+    """
+    task collection
+    GET v3/projects/<project_id>/todolists/<todolist_id>/tasks
+    """
     
     todolist_id = None
     project_id = None

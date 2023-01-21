@@ -1,3 +1,7 @@
+"""
+Handles Requests to ProofHub API
+"""
+
 import requests
 import time
 import sys
@@ -5,7 +9,7 @@ from pathlib import Path
 from config import Config
 
 class ProofhubApi(object):
-    
+
     urlbase = ''
     headers_json = { }
     outputdir = ''
@@ -26,11 +30,19 @@ class ProofhubApi(object):
         self.headers_json['Content-Type'] =  'application/json'
 
     def send_request(self, url) -> requests.Response:
+        """
+        GET Request to ProofHub API, returning the Response object of the request
+        """
+
         self.config.logger.info(url)
         api_response = requests.get(url, headers=self.headers_json)
         return api_response
     
     def send_request_check(self, url, file_request=False) -> requests.Response:
+        """
+        Requests to ProofHub API, returning the Response object of the request. As ProofHub has a rate limit based on calls per second, 
+        it will repeat the requests until it gets a valid response (e.g. not a return code 429)
+        """
         
         send_request = True
         
@@ -71,6 +83,13 @@ class ProofhubApi(object):
                 sys.exit(1)
 
     def get_data_array(self, prefix, package_requests=True):
+        """
+        JSON GET request to given URL prefix (without base URL to proofhub instance). Result is returned as array
+    
+        The ProofHub API just returns up to 100 objects for each request, which is not clearly documented. 
+        This method will download all with multiple requests if needed, filling parameters for start and number of objects. It stops, if the request result is empty.
+        """
+
         url_base = self.urlbase + prefix
         
         result = []
@@ -104,41 +123,12 @@ class ProofhubApi(object):
         
         return result
 
-    def get_data_string(self, prefix, package_requests=True):
-        url_base = self.urlbase + prefix
-        
-        result = []
-        result_request = []
-        
-        do_request=True
-        start = 0
-        limit = 90
-        
-        while do_request == True:
-            url = url_base
-            
-            if package_requests == True:
-                url = url + "?start=" + str(start) + "&limit=" + str(limit)
-            
-            api_response = self.send_request_check(url)
-            start = start + limit
-            
-            if not api_response:
-                do_request = False
-            else:
-                result_request.clear()
-                
-                json_data = api_response.json()
-                result_request = self.getResponseAsArray(json_data)
-                if len(result_request) > 0:
-                    result.extend(result_request)
-                
-                if package_requests == False or len(result_request) == 0:
-                    do_request = False 
-        
-        return result
-
     def get_file(self, full_url, dirname, filename, forced_download=False):
+        """
+        Request for file from ProofHub. It saves the file in a given directory with a give filename.
+        If the file exists already, it will not download it again, if forced flag is not set
+        """
+        
         # check file already exists
         if forced_download == False and self.check_file_exists(filename):
             return

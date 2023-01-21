@@ -1,21 +1,22 @@
+"""
+projects
+
+Endpoint GET
+GET v3/projects
+"""
+
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject 
-from file_api import FileApi
 
 from task import Todolists
 from notes import Notebooks
 from file import Folders
 from topic import Topics
 
-# projects
-#
-# Endpoint GET
-# GET v3/projects
-
-#
-# single project
-#
 class Project(ProofHubObject):
+    """
+    single project
+    """
     
     project_id = ""
     todolists = None 
@@ -51,10 +52,11 @@ class Project(ProofHubObject):
             self.notebooks = Notebooks(self.proofhubApi, self.project_id)
             self.notebooks.getNotebooks()
 
-#
-# projects collection
-#
+
 class Projects(ProofHubObject):
+    """
+    projects collection
+    """
     
     projects = []
     

@@ -1,23 +1,26 @@
+"""
+roles 
+
+Endpoint GET
+GET v3/roles
+"""
+
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
-
-# roles 
-#
-# Endpoint GET
-# GET v3/roles
-
-#
-# single role
-#       
+   
 class Role(ProofHubObject):
+    """
+    single role
+    """
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
 
-#
-# roles collection
-#
+
 class Roles(ProofHubObject):
+    """
+    roles collection
+    """
     
     roles = []
     
@@ -42,8 +45,8 @@ class Roles(ProofHubObject):
             
         self.archive()
 
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/roles/"
+    def getSubPath(self) -> str:
+        return f"roles"
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("roles.json")

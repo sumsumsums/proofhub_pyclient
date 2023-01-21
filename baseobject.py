@@ -1,12 +1,17 @@
+"""
+base object class
+"""
+
 import json
 from pathlib import Path
 
 from file_api import FileApi
 from proofhub_api import ProofhubApi
 
-
-##### base object
 class ProofHubObject(object):
+    """
+    base object class
+    """
     
     proofhubApi: ProofhubApi = None
     json_data = None

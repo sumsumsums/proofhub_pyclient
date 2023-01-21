@@ -1,24 +1,24 @@
+"""
+categories
 
+Endpoint GET
+GET v3/categories
+"""
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
 
-# categories
-#
-# Endpoint GET
-# GET v3/categories
-
-#
-# single category
-#
 class Category(ProofHubObject):
+    """
+    single category
+    """
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
 
-#
-# categories collection
-#
 class Categories(ProofHubObject):
+    """
+    categories collection
+    """
     
     categories = []
     
@@ -43,8 +43,8 @@ class Categories(ProofHubObject):
             
         self.archive()
 
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/categories/"
+    def getSubPath(self) -> str:
+        return f"categories"
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("categories.json")

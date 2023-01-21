@@ -1,23 +1,25 @@
+"""
+groups
+
+Endpoint GET
+GET v3/groups
+"""
+
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
 
-# groups 
-#
-# Endpoint GET
-# GET v3/groups
-
-#
-# single group
-#
 class Group(ProofHubObject):
+    """
+    single group
+    """
     
     def __init__(self, proofhubApi: ProofhubApi, json_data=None):
         super().__init__(json_data, proofhubApi)
 
-#
-# groups collection
-#
 class Groups(ProofHubObject):
+    """
+    groups collection
+    """
     
     groups = []
     
@@ -43,8 +45,8 @@ class Groups(ProofHubObject):
             
         self.archive()
 
-    def getFilePath(self) -> str:
-        return f"{self.proofhubApi.outputdir}/groups/"
+    def getSubPath(self) -> str:
+        return f"groups"
 
     def saveJson(self):
         self.saveJsonFileNotEmpty("groups.json")

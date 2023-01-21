@@ -1,3 +1,10 @@
+"""
+Backup Client for ProofHub using ProofHub API
+API: https://github.com/ProofHub/api_v3
+
+TODO
+Files: falls nicht full_image gegeben, über download versuchen?
+"""
 
 from datetime import date
 
@@ -10,20 +17,12 @@ from role import Roles
 from group import Groups
 from project import Projects
 
-#
-# API: https://github.com/ProofHub/api_v3
-#
-
 config = Config()
 config.parseInput()
 
 config.logger.info("----------------------")
 today = f"Starting program - date: {date.today()}"
 config.logger.info(today)
-
-# TODO
-# Files: falls nicht full_image gegeben, über download versuchen?
-#
 
 ph = ProofhubApi(config=config)
 

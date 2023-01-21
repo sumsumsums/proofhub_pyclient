@@ -1,15 +1,17 @@
+"""
+topics and topic comments
+
+Endpoint GET
+GET v3/projects/<project_id>/topics
+"""
+
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
 
-# topics and topic comments
-#
-# Endpoint GET
-# GET v3/projects/<project_id>/topics
-
-#
-# single topic
-#
 class Topic(ProofHubObject):
+    """
+    single topic
+    """
 
     sub_file_path = ""
     topic_id = None
@@ -38,10 +40,11 @@ class Topic(ProofHubObject):
         comments = TopicComments(self.proofhubApi, self.project_id, self.topic_id, self.getSubPath())
         comments.getTopicComments()
 
-#
-# topics collection
-#
+
 class Topics(ProofHubObject):
+    """
+    topics collection
+    """
     
     project_id = None
     topics = []
@@ -89,10 +92,10 @@ class Topics(ProofHubObject):
         
         self.archiveItems(ids)
 
-#
-# topic comment
-#
 class TopicComment(ProofHubObject):
+    """
+    topic comment
+    """
 
     topic_id = None
     project_id = None
@@ -104,10 +107,10 @@ class TopicComment(ProofHubObject):
         self.topic_id = topic_id
         self.project_id = project_id
 
-#
-# topic comments collection
-#
 class TopicComments(ProofHubObject):
+    """
+    topic comments collection
+    """
     
     topic_id = None
     project_id = None
@@ -152,11 +155,3 @@ class TopicComments(ProofHubObject):
 
     def getSubPath(self) -> str:
         return f"{self.sub_file_path}/"
-
-    def archive(self):
-        return
-        #ids = []
-        #for item in self.topiccom:
-        #    ids.append(str(item.topic_id))
-        #
-        #self.archive(ids)
