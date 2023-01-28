@@ -7,6 +7,7 @@ GET v3/projects/<project_id>/folders
 
 from proofhub_api import ProofhubApi
 from baseobject import ProofHubObject
+import file_browser
 
 class Folder(ProofHubObject):
     """
@@ -121,8 +122,10 @@ class File(ProofHubObject):
     def getSubPath(self) -> str:
         return f"{self.sub_file_path}/{self.file_name}"
 
-    def getFileUrl(self):
+    def getFileUrlImage(self):
         urlfull = None
+        
+        self.proofhubApi.config.logger.debug("Getting url of file " + self.file_name)
 
         if not "url" in self.json_data:
             return
@@ -130,24 +133,38 @@ class File(ProofHubObject):
             return
 
         urlbase = self.json_data["url"]
+        file_type = self.json_data["file_type"]
 
         if "full_image" in urlbase:
             urlfull = urlbase["full_image"]
-
-        if self.json_data["file_type"] == "odt":
-            urlfull = None
+        else:
             return
+        
+        if file_type == "png" or file_type == "jpg" or file_type == "gif" or file_type == "webp":
+            return urlfull
+
+    def getFileUrl(self):
+        self.proofhubApi.config.logger.debug("Getting url of file " + self.file_name)
+
+        if not "url" in self.json_data:
+            return
+        urlbase = self.json_data["url"]
+
+        if "download" in urlbase:
+            return urlbase["download"]
 
     def downloadFile(self):
         filename = self.getFilePath()
-        urlfull = self.getFileUrl()
-
-        if urlfull == None:
-            return
-
-        dir = f"{super().getFilePath(no_sub=True)}/{self.sub_file_path}"
-        self.proofhubApi.get_file(urlfull, dir, filename)
-
+        
+        urlfull = self.getFileUrlImage()
+        if urlfull != None and urlfull != '':
+            dir = f"{super().getFilePath(no_sub=True)}/{self.sub_file_path}"
+            self.proofhubApi.get_file(urlfull, dir, filename)
+        else:
+            urlfull = self.getFileUrl()
+         #   if urlfull != None and urlfull != '':
+         #       dir = f"{super().getFilePath(no_sub=True)}/{self.sub_file_path}"
+         #       file_browser.getFile(self.proofhubApi, target_dir=dir, filename=self.file_name, url=urlfull)
 
 class Files(ProofHubObject):
     """

@@ -30,6 +30,9 @@ class Config(object):
     get_notebooks = True
     get_tasklists = True
     
+    files_download_browser = False 
+    files_temporary_dir = ''
+    
     archive_deprecated = False
     archive_dir = ''
     
@@ -63,6 +66,9 @@ class Config(object):
             'X-API-KEY': self.api_key,
             'User-Agent': self.user_agent,
         }
+        
+        self.files_download_browser = config.getboolean(self.default_section, 'files_download_browser', fallback=False)
+        self.files_temporary_dir = config.get(self.default_section, 'files_temporary_dir')
         
         # objects to get
         self.get_announcement = config.getboolean(self.default_section, 'get_announcement', fallback=True)
