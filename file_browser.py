@@ -2,6 +2,15 @@ from seleniumwire import webdriver
 
 from selenium.webdriver.chrome.service import Service as ChromeService
 
+from selenium.webdriver.common.by import By
+
+# Used to introduce a waiting mechanism.
+from selenium.webdriver.support.ui import WebDriverWait
+
+# Library of useful functions.
+from selenium.webdriver.support import expected_conditions as EC
+
+
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
 from selenium.common.exceptions import TimeoutException
@@ -70,11 +79,9 @@ def checkDirectories():
 
 
 def interceptor(request):
-    del request.headers["User-Agent"]
-    request.headers["User-Agent"] = user_agent
     request.headers["X-API-KEY"] = api_key
 
-def newChromeBrowser():
+def newChromeBrowser() -> webdriver.Chrome:
     options = webdriver.ChromeOptions()
 
     options.add_argument("headless")
@@ -85,19 +92,21 @@ def newChromeBrowser():
 
     options.add_argument("start-maximized") # open Browser in maximized mode
     options.add_argument("disable-infobars") # disabling infobars
-    options.add_argument("--disable-extensions") # disabling extensions
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox"); # Bypass OS security model
+    options.add_argument("safebrowsing-disable-download-protection")
 
     service = ChromeService(executable_path=ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
     return webdriver.Chrome(service=service, options=options)
 
 def getFileByChrome(full_url):
     browser = newChromeBrowser()
-    browser.request_interseptor = interceptor
+    browser.request_interceptor = interceptor
+
     try:
         browser.implicitly_wait(20)
         browser.set_page_load_timeout(20)
+        browser.delete_all_cookies()
         browser.get(full_url)
     except TimeoutException:
         print("timeout")
@@ -105,23 +114,26 @@ def getFileByChrome(full_url):
         time.sleep(3) # for renaming file
 
         # Access requests via the `requests` attribute
-        #for request in browser.requests:
-        #    if request.response:
-        #        print(
-        #            request.url,
-        #            request.response.status_code,
-        #            request.response.headers['Content-Type']
-        #)
+        # for request in browser.requests:
+        #     if request.response:
+        #         print(
+        #             request.url,
+        #             request.headers,
+        #             request.response.headers
+        # )
         
         browser.quit()
         renameFile()
 
 def renameFile():
     for tmp_file in os.listdir(temporary_dir):
-        print(tmp_file)
-        new_filename = os.path.join(download_dir, file_name)
+        if tmp_file[0].isnumeric() == True:
+            filename_new = tmp_file[9:]
+        else:
+            filename_new = tmp_file[10:]
+        new_filename = os.path.join(download_dir, filename_new)
         old_filename = os.path.join(temporary_dir, tmp_file)
-        print(new_filename)
-        print(old_filename)
+        #print(new_filename)
+        #print(old_filename)
         shutil.move(old_filename, new_filename)
 

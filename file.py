@@ -150,8 +150,8 @@ class File(ProofHubObject):
             return
         urlbase = self.json_data["url"]
 
-        if "download" in urlbase:
-            return urlbase["download"]
+        if "view" in urlbase:
+            return urlbase["view"]
 
     def downloadFile(self):
         filename = self.getFilePath()
@@ -162,9 +162,9 @@ class File(ProofHubObject):
             self.proofhubApi.get_file(urlfull, dir, filename)
         else:
             urlfull = self.getFileUrl()
-         #   if urlfull != None and urlfull != '':
-         #       dir = f"{super().getFilePath(no_sub=True)}/{self.sub_file_path}"
-         #       file_browser.getFile(self.proofhubApi, target_dir=dir, filename=self.file_name, url=urlfull)
+            if urlfull != None and urlfull != '':
+                dir = f"{super().getFilePath(no_sub=True)}/{self.sub_file_path}"
+                file_browser.getFile(self.proofhubApi, target_dir=dir, filename=self.file_name, url=urlfull)
 
 class Files(ProofHubObject):
     """
