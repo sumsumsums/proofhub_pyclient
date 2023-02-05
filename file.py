@@ -147,7 +147,7 @@ class File(ProofHubObject):
         filename = self.getFilePath()
         forced_download = False # TODO change timestamp
         
-        self.proofhubApi.config.logger.info("Getting file " + self.file_name + " normalized name: " + self.file_name_norm)
+        self.proofhubApi.config.logger.debug("Getting file " + self.file_name + " normalized name: " + self.file_name_norm)
         
         urlfull = self.getFileUrl()
         if urlfull != None and urlfull != '':
