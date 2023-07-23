@@ -55,6 +55,7 @@ class Config(object):
 
     def readConfig(self, configfile):
         config = configparser.ConfigParser()
+        print(configfile)
         config.read(configfile)
         
         self.api_key = config.get(self.default_section, 'api_key')
