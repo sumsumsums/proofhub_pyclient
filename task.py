@@ -170,8 +170,9 @@ class Tasks(ProofHubObject):
     def saveJson(self):
         self.saveJsonFileNotEmpty("tasks.json")
 
-        for task in self.tasks:
-            task.getComments()
+        if self.proofhubApi.config.get_comments:
+            for task in self.tasks:
+                task.getComments()
 
     def getSubPath(self) -> str:
         return f"{self.sub_file_path}/tasks"
