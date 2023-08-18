@@ -158,7 +158,7 @@ class Tasks(ProofHubObject):
             self.tasks.append(objitem)
 
     def getTasks(self, save=True):
-        url = f"/projects/{self.project_id}/todolists/{self.todolist_id}"
+        url = f"/projects/{self.project_id}/todolists/{self.todolist_id}/tasks"
 
         self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
