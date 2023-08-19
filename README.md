@@ -1,3 +1,5 @@
+# Proofhub PyClient
+
 Client to backup a ProofHub project using the ProofHub API V3. The API description is at https://github.com/ProofHub/api_v3 Note that the API description is not complete in some cases.
 
 - It saves all objects as JSON on file system. Each object (groups, roles, projects) get a sub-directory. Projects have subdirectories for their respective subobjects, e.g. tasks, notebooks, ...
@@ -13,7 +15,16 @@ Client to backup a ProofHub project using the ProofHub API V3. The API descripti
 
 Note that it is not tested much currently, so errors including dumps might happen.
 
-TODO:
+# How to Run
+
+Using python3 as environment.
+
+1. Add API key and proofhub address to `configuration.ini`.
+2. Configure what you want to download in `configuration.ini`
+3. install requirements `pip install -r requirements.txt`
+4. Run `python proofhub_client.py`
+
+# Next Development
 
 - download of other files beside images (maybe with a headless browser)
 

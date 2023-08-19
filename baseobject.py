@@ -35,7 +35,12 @@ class ProofHubObject(object):
         filename = f"{dirname}/{filename}"
         
         with open(f"{filename}", mode, encoding='utf-8') as f:
-            json.dump(json_data, f) 
+            if isinstance(json_data, list):
+                for line in json_data:
+                    json.dump(line, f)
+                    f.write('\n')
+            else:
+                json.dump(json_data, f) 
 
     def saveJsonFileNotEmpty(self, filename):
         if not self.json_data or len(self.json_data) == 0:

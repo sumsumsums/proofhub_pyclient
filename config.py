@@ -29,7 +29,10 @@ class Config(object):
     get_topics = True 
     get_notebooks = True
     get_tasklists = True
+    get_comments = True
     
+    projects_whitelist = []
+
     archive_deprecated = False
     archive_dir = ''
     
@@ -75,6 +78,9 @@ class Config(object):
         self.get_topics = config.getboolean(self.default_section, 'get_topics', fallback=True)
         self.get_notebooks = config.getboolean(self.default_section, 'get_notebooks', fallback=True)
         self.get_tasklists = config.getboolean(self.default_section, 'get_tasklists', fallback=True)
+        self.get_comments = config.getboolean(self.default_section, 'get_comments', fallback=True)
+
+        self.projects_whitelist = config.get(self.default_section, 'projects', fallback=[])
 
         self.archive_deprecated = config.getboolean(self.default_section, 'archive_deprecated', fallback=False)
         self.archive_dir = config.get(self.default_section, 'archive_dir')

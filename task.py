@@ -158,7 +158,7 @@ class Tasks(ProofHubObject):
             self.tasks.append(objitem)
 
     def getTasks(self, save=True):
-        url = f"/projects/{self.project_id}/todolists/{self.todolist_id}"
+        url = f"/projects/{self.project_id}/todolists/{self.todolist_id}/tasks"
 
         self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()
@@ -170,8 +170,9 @@ class Tasks(ProofHubObject):
     def saveJson(self):
         self.saveJsonFileNotEmpty("tasks.json")
 
-        for task in self.tasks:
-            task.getComments()
+        if self.proofhubApi.config.get_comments:
+            for task in self.tasks:
+                task.getComments()
 
     def getSubPath(self) -> str:
         return f"{self.sub_file_path}/tasks"

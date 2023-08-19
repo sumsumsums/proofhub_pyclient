@@ -32,6 +32,10 @@ class Project(ProofHubObject):
         self.project_id = self.json_data["id"]
         
     def getProjectData(self):
+        if len(self.proofhubApi.config.projects_whitelist) > 0 and \
+            not str(self.project_id) in self.proofhubApi.config.projects_whitelist:
+                return
+
         # todolists / task lists
         if self.proofhubApi.config.get_tasklists:
             self.todolists = Todolists(self.proofhubApi, self.project_id)
