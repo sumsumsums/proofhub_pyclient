@@ -7,6 +7,7 @@ import time
 import sys
 from pathlib import Path
 from config import Config
+from requests.models import PreparedRequest
 
 class ProofhubApi(object):
 
@@ -103,7 +104,11 @@ class ProofhubApi(object):
             url = url_base
             
             if package_requests == True:
-                url = url + "?start=" + str(start) + "&limit=" + str(limit)
+                params = {'start':str(start),'limit':str(limit)}
+                req = PreparedRequest()
+                req.prepare_url(url, params)
+                url = req.url
+                # url = url + "?start=" + str(start) + "&limit=" + str(limit)
             
             api_response = self.send_request_check(url)
             start = start + limit
