@@ -30,6 +30,7 @@ class Config(object):
     get_notebooks = True
     get_tasklists = True
     get_comments = True
+    get_all_tasks = True
     
     projects_whitelist = []
 
@@ -79,8 +80,18 @@ class Config(object):
         self.get_notebooks = config.getboolean(self.default_section, 'get_notebooks', fallback=True)
         self.get_tasklists = config.getboolean(self.default_section, 'get_tasklists', fallback=True)
         self.get_comments = config.getboolean(self.default_section, 'get_comments', fallback=True)
+        self.get_all_tasks = config.getboolean(self.default_section, 'get_all_tasks', fallback=True)
+        self.get_all_lists = config.getboolean(self.default_section, 'get_all_lists', fallback=True)
 
-        self.projects_whitelist = config.get(self.default_section, 'projects', fallback=[])
+        self.projects_whitelist = []
+        projects_whitelist = config.get(self.default_section, 'projects')
+        if projects_whitelist and not projects_whitelist == "":
+            self.projects_whitelist = projects_whitelist.split(',')
+
+        self.list_ids = []
+        list_ids = config.get(self.default_section, 'todolists')
+        if list_ids and not list_ids == "":
+            self.list_ids = list_ids.split(',')
 
         self.archive_deprecated = config.getboolean(self.default_section, 'archive_deprecated', fallback=False)
         self.archive_dir = config.get(self.default_section, 'archive_dir')

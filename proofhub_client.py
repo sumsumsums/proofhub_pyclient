@@ -16,6 +16,8 @@ from category import Categories
 from role import Roles
 from group import Groups
 from project import Projects
+from all_tasks import AllTasks
+from all_lists import AllLists
 
 config = Config()
 config.parseInput()
@@ -55,6 +57,16 @@ if config.get_projects:
     config.logger.info("Getting projects")
     projects = Projects(proofhubApi=ph)
     projects.getProjects()
+
+if config.get_all_tasks:
+    config.logger.info("Getting all tasks")
+    all_tasks = AllTasks(proofhubApi=ph)
+    all_tasks.getAllTasks()
+
+if config.get_all_lists:
+    config.logger.info("Getting all lists")
+    all_lists = AllLists(proofhubApi=ph)
+    all_lists.getAllLists()
 
 today = f"Finished program - date: {date.today()}"
 config.logger.info(today)
