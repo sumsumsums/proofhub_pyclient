@@ -13,7 +13,4 @@ Client to backup a ProofHub project using the ProofHub API V3. The API descripti
 
 Note that it is not tested much currently, so errors including dumps might happen.
 
-TODO:
-
-- download of other files beside images (maybe with a headless browser)
 
