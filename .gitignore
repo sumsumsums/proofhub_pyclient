@@ -4,3 +4,4 @@ output/*
 *.backup
 *.env
 *.json
+geckodriver.log

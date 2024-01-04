@@ -123,7 +123,7 @@ class Task(ProofHubObject):
         
         url = f"projects/{self.project_id}/todolists/{self.todolist_id}/tasks/{self.task_id}/comments"
         
-        self.json_data = self.proofhubApi.get_data_array(url)
+        self.json_data = self.proofhubApi.get_data_array(url, package_requests=False)
         filename = f"{self.task_id}_task_comments.json"
         self.saveJsonFileNotEmpty(filename)
 

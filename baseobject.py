@@ -5,7 +5,7 @@ base object class
 import json
 from pathlib import Path
 
-from file_api import FileApi
+import file_api
 from proofhub_api import ProofhubApi
 
 class ProofHubObject(object):
@@ -70,8 +70,7 @@ class ProofHubObject(object):
         if self.proofhubApi.config.archive_deprecated == False:
             return 
         
-        fileApi = FileApi(self.proofhubApi.config)
-        subdirs = fileApi.getSubDirectories(directory=self.getFilePath())
+        subdirs = file_api.getSubDirectories(directory=self.getFilePath())
         if not subdirs:
             return
         
@@ -81,4 +80,4 @@ class ProofHubObject(object):
                 continue 
             else:
                 subdir = subdirs.get(key)
-                fileApi.moveDirectoryArchive(subdir, self.getSubPath(), key)
+                file_api.moveDirectoryArchive(subdir, self.getSubPath(), key, self.proofhubApi.config.archive_dir)

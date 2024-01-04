@@ -138,6 +138,8 @@ class ProofhubApi(object):
         if forced_download == False and self.check_file_exists(filename):
             return
         
+        self.config.logger.info("Download file " + dirname + " " + filename + " from " + full_url)
+        
         api_response = self.send_request_check(full_url, file_request=True)
         if not api_response:
             return

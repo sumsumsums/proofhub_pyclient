@@ -8,8 +8,6 @@ Client to backup a ProofHub project using the ProofHub API V3. The API descripti
 
 - Deprecated objects not in your project anymore can be archive / moved to another directory.
 
-- For files, it just downloads images for now. Download of other files is not possible with the API.
-
 - It can be used in a batch job and tries not to download already downloaded files again.
 
 

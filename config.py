@@ -29,6 +29,9 @@ class Config(object):
     get_topics = True 
     get_notebooks = True
     get_tasklists = True
+    
+    files_download_browser = False 
+    files_temporary_dir = ''
     get_comments = True
     get_all_tasks = True
     
@@ -56,6 +59,7 @@ class Config(object):
 
     def readConfig(self, configfile):
         config = configparser.ConfigParser()
+        print(configfile)
         config.read(configfile)
         
         self.api_key = config.get(self.default_section, 'api_key')
@@ -67,6 +71,9 @@ class Config(object):
             'X-API-KEY': self.api_key,
             'User-Agent': self.user_agent,
         }
+        
+        self.files_download_browser = config.getboolean(self.default_section, 'files_download_browser', fallback=False)
+        self.files_temporary_dir = config.get(self.default_section, 'files_temporary_dir')
         
         # objects to get
         self.get_announcement = config.getboolean(self.default_section, 'get_announcement', fallback=True)
