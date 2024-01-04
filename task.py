@@ -62,10 +62,18 @@ class Todolists(ProofHubObject):
             objitem = Todolist(self.proofhubApi, self.project_id, dir, jsonitem)
             self.todolists.append(objitem)
 
-    def getTodolists(self, save=True):
-        url = f"/projects/{self.project_id}/todolists"
+        if self.proofhubApi.config.include_archived_todolists:
+            for jsonitem in self.json_data_archived:
+                objitem = Todolist(self.proofhubApi, self.project_id, dir, jsonitem)
+                self.todolists.append(objitem)
 
-        self.json_data = self.proofhubApi.get_data_array(url)
+    def getTodolists(self, save=True, include_archived=True):
+        url = f"projects/{self.project_id}/todolists"
+        url_archived = f"projects/{self.project_id}/todolists/archived"
+
+        self.json_data = self.proofhubApi.get_data_array(url, package_requests=False)
+        if self.proofhubApi.config.include_archived_todolists:
+            self.json_data_archived = self.proofhubApi.get_data_array(url_archived, package_requests=False)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()
@@ -158,7 +166,7 @@ class Tasks(ProofHubObject):
             self.tasks.append(objitem)
 
     def getTasks(self, save=True):
-        url = f"/projects/{self.project_id}/todolists/{self.todolist_id}/tasks"
+        url = f"projects/{self.project_id}/todolists/{self.todolist_id}/tasks"
 
         self.json_data = self.proofhubApi.get_data_array(url)
         self.parseJsonResponse()

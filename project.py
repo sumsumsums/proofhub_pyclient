@@ -75,7 +75,7 @@ class Projects(ProofHubObject):
             self.projects.append(objitem)
 
     def getProjects(self, save=True):
-        self.json_data = self.proofhubApi.get_data_array('projects')
+        self.json_data = self.proofhubApi.get_data_array('projects', package_requests=False)
         self.parseJsonResponse()
         if save == True:
             self.saveJson()

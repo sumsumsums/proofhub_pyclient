@@ -89,6 +89,7 @@ class Config(object):
         self.get_comments = config.getboolean(self.default_section, 'get_comments', fallback=True)
         self.get_all_tasks = config.getboolean(self.default_section, 'get_all_tasks', fallback=True)
         self.get_all_lists = config.getboolean(self.default_section, 'get_all_lists', fallback=True)
+        self.include_archived_todolists = config.getboolean(self.default_section, 'include_archived_todolists', fallback=False)
 
         self.projects_whitelist = []
         projects_whitelist = config.get(self.default_section, 'projects')
@@ -96,7 +97,7 @@ class Config(object):
             self.projects_whitelist = projects_whitelist.split(',')
 
         self.list_ids = []
-        list_ids = config.get(self.default_section, 'todolists')
+        list_ids = config.get(self.default_section, 'todolists', fallback=[])
         if list_ids and not list_ids == "":
             self.list_ids = list_ids.split(',')
 
