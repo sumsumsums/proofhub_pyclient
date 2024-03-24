@@ -49,8 +49,6 @@ class ProofhubApi(object):
         while send_request == True:
             api_response = self.send_request(url)
             
-            response_error = f"Error during ProofHub request - Response code: {api_response.status_code}"
-        
             if api_response.status_code == 200:
                 send_request = False
                 return api_response
