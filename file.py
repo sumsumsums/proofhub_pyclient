@@ -124,9 +124,11 @@ class File(ProofHubObject):
     def getSubPath(self) -> str:
         return f"{self.sub_file_path}/{self.file_name_norm}"
 
-    def getFileUrl(self):
+    def getFileUrl(self) -> str:
+        file_url = None
+        
         if not "url" in self.json_data:
-            return
+            return file_url
 
         urlbase = self.json_data["url"]
         
@@ -137,11 +139,16 @@ class File(ProofHubObject):
         # images
         if "full_image" in urlbase:
             if file_type == "png" or file_type == "jpg" or file_type == "gif" or file_type == "webp":
-                return urlbase["full_image"]
+                file_url = urlbase["full_image"]
         
         # by view attribute
-        if "view" in urlbase:
-            return urlbase["view"]
+        if file_url == None and "view" in urlbase:
+            file_url = urlbase["view"]
+        
+        if file_url != None and str(file_url).find("proofhub") > -1:
+            return file_url
+        else:
+            return None
 
     def downloadFile(self):
         filename = self.getFilePath()
